@@ -82,7 +82,8 @@ self.addEventListener('fetch', (event) => {
         const page = home
           .replaceAll('Context Cloze — practise words in sentences', title)
           .replaceAll('Paste your own words and sentences, then practise retrieving each word in context. Your word list stays on your device.', description)
-          .replaceAll('https://context-cloze-vocab.sociobot.in/', routeUrl)
+          .replace('href="https://context-cloze-vocab.sociobot.in/"', `href="${routeUrl}"`)
+          .replace('property="og:url" content="https://context-cloze-vocab.sociobot.in/"', `property="og:url" content="${routeUrl}"`)
           .replaceAll('Type the missing word in sentences you chose.', social);
         mkdirSync(resolve(outputDirectory, route), { recursive: true });
         writeFileSync(resolve(outputDirectory, route, 'index.html'), page);
