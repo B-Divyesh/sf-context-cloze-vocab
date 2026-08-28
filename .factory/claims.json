@@ -4,7 +4,7 @@
     "claim": "The demo opens eight sample words.",
     "where": "landing action, demo desk",
     "test": "npm test -- --grep @claim:demo-sample-count",
-    "sandbox": "fresh /demo; assert the sample word-list count is eight"
+    "sandbox": "fresh /?demo=1; assert the demo banner, reset and exit controls, isolated demo database, active question, and eight-word count"
   },
   {
     "id": "demo-isolation",
@@ -109,7 +109,7 @@
     "claim": "Browser site-data controls remove stored app data.",
     "where": "privacy page, README",
     "test": "npm test -- --grep @claim:clear-site-data",
-    "sandbox": "fresh browser; create real and demo records plus a license, clear site storage, and assert no app records remain"
+    "sandbox": "fresh browser; create named real and demo records plus a license, clear site storage, assert both databases and license are absent before reload, then prove the real list is empty and demo reseeds without the old record"
   },
   {
     "id": "offline-reload",

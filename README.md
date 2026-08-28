@@ -8,7 +8,7 @@ type the missing word when it is due. Wrong guesses become confusion pairs.
 
 Live site: <https://context-cloze-vocab.sociobot.in>
 
-One-click sample: <https://context-cloze-vocab.sociobot.in/demo>
+One-click sample: <https://context-cloze-vocab.sociobot.in/?demo=1>
 
 ## What it does
 
@@ -35,7 +35,7 @@ npm install
 npm run dev
 ```
 
-Open <http://localhost:5173>. Use <http://localhost:5173/demo> for the
+Open <http://localhost:5173>. Use <http://localhost:5173/?demo=1> for the
 isolated sample word list.
 
 ## Test and build
@@ -48,6 +48,13 @@ npm run build
 `npm test` runs model tests, claim tests, accessibility checks, and the 390 px
 layout check in Chromium. `npm run build` writes the static deploy to `dist/`,
 with `dist/index.html` at its root. Inspect it with `npm run preview`.
+
+## Deploy
+
+Publish the contents of `dist/` as a static site. Keep
+`staticwebapp.config.json` at the site root so real routes, headers, caching,
+and the designed 404 response remain active. The Param Factory manages the
+production deployment and DNS.
 
 ## Data and privacy
 

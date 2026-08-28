@@ -27,10 +27,25 @@ async function clearDemoStore(page: import('@playwright/test').Page): Promise<vo
   });
 }
 
-test('@claim:demo-sample-count demo opens eight sample words', async ({ page }) => {
-  await page.goto('/demo');
+test('@claim:demo-sample-count demo opens eight sample words', async ({ page, browser }) => {
+  await page.goto('/');
+  const sampleLink = page.getByRole('link', { name: 'Try it with sample data' });
+  await expect(sampleLink).toHaveAttribute('href', '/?demo=1');
+  await sampleLink.click();
+  await expect(page).toHaveURL('/?demo=1');
+  await expect(page).toHaveTitle('Demo — Context Cloze');
+  await expect(page.getByLabel('Demo status')).toContainText('Demo — sample data, nothing is saved to your word list');
+  await expect(page.getByRole('button', { name: 'Reset demo' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Start for real' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Type the missing word' })).toBeVisible();
   await expect(page.getByText('8 words', { exact: true })).toBeVisible();
+
+  const directContext = await browser.newContext({ baseURL: 'http://127.0.0.1:4173' });
+  const directPage = await directContext.newPage();
+  await directPage.goto('/?demo=1');
+  await expect(directPage.getByRole('heading', { name: 'Type the missing word' })).toBeVisible();
+  await expect.poll(() => directPage.evaluate(async () => (await indexedDB.databases()).map(({ name }) => name).filter(Boolean))).toEqual(['context-cloze-demo']);
+  await directContext.close();
 });
 
 test('@claim:demo-isolation demo opens with sample data and never enters real storage', async ({ page }) => {
@@ -222,13 +237,23 @@ test('@claim:clear-site-data clearing browser storage removes real demo and lice
   await page.getByLabel('Word', { exact: true }).fill('keepsake');
   await page.getByLabel('Sentence containing that word').fill('This keepsake belongs on the desk.');
   await page.getByRole('button', { name: 'Save word' }).click();
-  await page.goto('/demo');
+  await page.goto('/?demo=1');
+  const addForm = page.locator('#add-form');
+  await addForm.getByLabel('Word', { exact: true }).fill('discard-me');
+  await addForm.getByLabel('Sentence containing that word').fill('Please discard-me when browser data is cleared.');
+  await addForm.getByRole('button', { name: 'Save word' }).click();
+  await expect(page.getByText('9 words', { exact: true })).toBeVisible();
   await page.evaluate(() => localStorage.setItem('sb_license:context-cloze-vocab', 'erase-me'));
   const session = await page.context().newCDPSession(page);
   await session.send('Storage.clearDataForOrigin', { origin: 'http://127.0.0.1:4173', storageTypes: 'indexeddb,local_storage' });
-  await page.reload();
-  await expect.poll(() => page.evaluate(async () => (await indexedDB.databases()).map((database) => database.name).filter((name) => name?.startsWith('context-cloze-')))).toEqual(['context-cloze-demo']);
+  await expect.poll(() => page.evaluate(async () => (await indexedDB.databases()).map(({ name }) => name).filter((name) => name?.startsWith('context-cloze-')))).toEqual([]);
   await expect.poll(() => page.evaluate(() => localStorage.getItem('sb_license:context-cloze-vocab'))).toBeNull();
+  await page.goto('/');
+  await expect(page.getByText('0 words', { exact: true })).toBeVisible();
+  await expect(page.getByText('keepsake', { exact: true })).toHaveCount(0);
+  await page.goto('/?demo=1');
+  await expect(page.getByText('8 words', { exact: true })).toBeVisible();
+  await expect(page.getByText('discard-me', { exact: true })).toHaveCount(0);
 });
 
 test('@claim:paid-license a returned license stores beyond 50 words and shows every confusion pair', async ({ page }) => {

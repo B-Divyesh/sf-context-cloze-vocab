@@ -1,6 +1,6 @@
 # Demo sandbox
 
-- URL: `https://context-cloze-vocab.sociobot.in/demo` (local: `http://localhost:5173/demo`). It opens directly on a seeded missing-word question and answer field.
+- URL: `https://context-cloze-vocab.sociobot.in/?demo=1` (local: `http://localhost:5173/?demo=1`). It opens directly on a seeded missing-word question and answer field. `/demo` is an equivalent canonical route.
 - Sample: eight learner-owned-style word entries, five due words, and five
   past incorrect answers that form four confusion pairs.
 - Storage: sample and real word lists use separate browser databases. Demo mode

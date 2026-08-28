@@ -9,7 +9,7 @@ import type { Review, VocabItem } from './types';
 type AppRoute = 'home' | 'demo' | 'privacy' | 'terms' | 'offline' | 'not-found';
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
-let route = routeFor(location.pathname);
+let route = routeFor(location.pathname, location.search);
 let store = new VocabularyStore(route === 'demo');
 let items: VocabItem[] = [];
 let reviews: Review[] = [];
@@ -22,7 +22,8 @@ let isLoading = true;
 
 captureLicense();
 
-function routeFor(path: string): AppRoute {
+function routeFor(path: string, search = ''): AppRoute {
+  if (path === '/' && new URLSearchParams(search).get('demo') === '1') return 'demo';
   if (path === '/') return 'home';
   if (path === '/demo') return 'demo';
   if (path === '/privacy') return 'privacy';
@@ -46,12 +47,13 @@ function pageMeta(current: AppRoute): { title: string; description: string; soci
 
 function updateMeta(): void {
   const meta = pageMeta(route);
+  const canonicalPath = route === 'demo' ? '/demo' : location.pathname;
   document.title = meta.title;
   document.querySelector<HTMLMetaElement>('meta[name="description"]')!.content = meta.description;
-  document.querySelector<HTMLLinkElement>('link[rel="canonical"]')!.href = `https://context-cloze-vocab.sociobot.in${location.pathname}`;
+  document.querySelector<HTMLLinkElement>('link[rel="canonical"]')!.href = `https://context-cloze-vocab.sociobot.in${canonicalPath}`;
   for (const selector of ['meta[property="og:title"]', 'meta[name="twitter:title"]']) document.querySelector<HTMLMetaElement>(selector)!.content = meta.title;
   for (const selector of ['meta[property="og:description"]', 'meta[name="twitter:description"]']) document.querySelector<HTMLMetaElement>(selector)!.content = meta.social;
-  document.querySelector<HTMLMetaElement>('meta[property="og:url"]')!.content = `https://context-cloze-vocab.sociobot.in${location.pathname}`;
+  document.querySelector<HTMLMetaElement>('meta[property="og:url"]')!.content = `https://context-cloze-vocab.sociobot.in${canonicalPath}`;
 }
 
 function header(): string {
@@ -95,7 +97,7 @@ function homePage(): string {
         <h1 tabindex="-1">Recall words inside sentences</h1>
         <p class="lede">For independent learners who recognise words but cannot retrieve them while writing or speaking.</p>
         <div class="hero-actions">
-          <a class="button primary spa-link" href="/demo">Try it with sample data</a>
+          <a class="button primary spa-link" href="/?demo=1">Try it with sample data</a>
           <a class="button secondary" href="#practice">Add your words</a>
           <p>Opens eight sample words. Your word list stays untouched.</p>
         </div>
@@ -268,7 +270,7 @@ async function navigate(path: string, push = true, restoredScroll?: number): Pro
     history.replaceState({ ...(history.state || {}), scrollY: window.scrollY }, '', location.href);
     history.pushState({ scrollY: 0 }, '', `${url.pathname}${url.search}${url.hash}`);
   }
-  const next = routeFor(url.pathname);
+  const next = routeFor(url.pathname, url.search);
   const modeChanged = (next === 'demo') !== (route === 'demo');
   route = next;
   practice = [];

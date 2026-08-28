@@ -43,5 +43,5 @@ visitor-facing sentence exceeds 22 words or contains a banned marketing word.
 | Portable file | backup |
 | Paid entitlement | one-time license |
 
-Catalog description: “Practise your word list with typed sentence blanks.” It
-has eight words, begins with a verb, and is under 120 characters.
+Catalog description: “Practise your own words by typing them into sentence
+blanks.” It has ten words, begins with a verb, and is under 120 characters.
