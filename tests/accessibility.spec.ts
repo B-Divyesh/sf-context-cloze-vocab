@@ -57,6 +57,7 @@ test('keyboard focus is visible on Restore backup', async ({ page }) => {
 });
 
 test('back navigation restores the prior scroll position', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'Your practice desk' })).toBeVisible();
   await page.evaluate(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'instant' }));
@@ -66,7 +67,9 @@ test('back navigation restores the prior scroll position', async ({ page }) => {
   await expect(page).toHaveURL('/privacy');
   await page.goBack();
   await expect(page).toHaveURL('/');
-  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(300);
+  await page.waitForTimeout(500);
+  expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(300);
+  await expect(page.getByRole('heading', { level: 1 })).toBeFocused();
 });
 
 test('every app route updates its share metadata', async ({ page }) => {

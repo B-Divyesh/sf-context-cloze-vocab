@@ -12,7 +12,7 @@ changing the night-archive visual system or the offline PWA deployment class.
 | F-1-1 | The demo still opens directly on a seeded blank, answer field, and **Check answer**; counts follow the exercise. | `@claim:demo-sample-count`; mobile screenshot `.factory/evidence/polish-2-demo-390.png`; live `/?demo=1` check. |
 | F-1-2 | The hidden restore input still gives its visible label the designed 3 px amber focus ring. | `keyboard focus is visible on Restore backup`; full accessibility suite. |
 | F-1-3 | The offline mark retains its compliant amber treatment and `/offline` remains in the Axe route set. | `accessibility smoke /offline`; live `/offline` Axe check. |
-| F-1-4 | History entries retain their scroll offset and popstate restores it. | `back navigation restores the prior scroll position`. |
+| F-1-4 | Live mobile checking exposed a delayed smooth-scroll/focus race. Popstate now focuses the restored page heading without scrolling it, then restores the saved offset instantly; the regression waits past the old false-positive interval at 390 px. | `back navigation restores the prior scroll position`; live 390 px Back check. |
 | F-1-5 | Static route documents and the designed 404 retain route titles, descriptions, canonical, Open Graph, Twitter, and apple-touch metadata. | `every app route updates its share metadata`; `@regression:real-404`; live route/header crawl. |
 | F-1-6 | Saving a word still creates a visible blank that accepts a typed answer. | `@claim:typed-cloze`. |
 | F-1-7 | The eight-word sample statement remains inventoried and now tests the first-screen click into `/?demo=1`. | `@claim:demo-sample-count`. |

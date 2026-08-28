@@ -278,10 +278,15 @@ async function navigate(path: string, push = true, restoredScroll?: number): Pro
   if (modeChanged) store = new VocabularyStore(route === 'demo');
   if (route === 'home' || route === 'demo') await loadData(); else render();
   requestAnimationFrame(() => {
-    if (typeof restoredScroll === 'number') window.scrollTo({ top: restoredScroll, behavior: 'auto' });
-    else if (url.hash) document.querySelector(url.hash)?.scrollIntoView();
-    else window.scrollTo({ top: 0, behavior: 'auto' });
-    document.querySelector<HTMLElement>('main h1')?.focus();
+    const heading = document.querySelector<HTMLElement>('main h1');
+    if (typeof restoredScroll === 'number') {
+      heading?.focus({ preventScroll: true });
+      window.scrollTo({ top: restoredScroll, behavior: 'instant' });
+    } else {
+      if (url.hash) document.querySelector(url.hash)?.scrollIntoView();
+      else window.scrollTo({ top: 0, behavior: 'auto' });
+      heading?.focus();
+    }
     const announcer = document.querySelector('#route-announcer');
     if (announcer) announcer.textContent = document.title;
   });
