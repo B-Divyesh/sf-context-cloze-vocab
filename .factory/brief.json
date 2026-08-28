@@ -1,0 +1,16 @@
+{
+  "slug": "context-cloze-vocab",
+  "title": "Context Cloze",
+  "summary": "Practice your own words by typing them into sentences.",
+  "territory": "utilities",
+  "user": "Independent language learners who know many word meanings but need to retrieve the right word in a sentence.",
+  "smallest_useful_product": "Local-first web app that accepts a pasted word list and user-supplied example sentences, schedules typed cloze recall, and shows confusion pairs.",
+  "artifact_class": "pwa-offline",
+  "monetization": "one-time",
+  "constraints": [
+    "Store lists locally by default.",
+    "Do not redistribute copyrighted example text.",
+    "Support Unicode and right-to-left scripts."
+  ],
+  "source": "Factory work order context-cloze-vocab-build-1"
+}
