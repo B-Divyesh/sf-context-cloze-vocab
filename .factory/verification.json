@@ -3,17 +3,17 @@
   "url": "http://127.0.0.1:4173/",
   "lighthouse": {
     "version": "12.8.2",
-    "performance": 100,
+    "performance": 99,
     "accessibility": 100,
     "bestPractices": 100,
     "seo": 100,
-    "firstContentfulPaintMs": 951,
-    "largestContentfulPaintMs": 1403,
+    "firstContentfulPaintMs": 967,
+    "largestContentfulPaintMs": 1278,
     "cumulativeLayoutShift": 0,
-    "totalBlockingTimeMs": 0
+    "totalBlockingTimeMs": 98
   },
   "verifyUrl": {
-    "loadMs": 611,
+    "loadMs": 580,
     "consoleErrors": 0,
     "title": "Context Cloze — practise words in sentences",
     "lang": "en",
