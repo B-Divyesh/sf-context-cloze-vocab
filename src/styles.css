@@ -162,7 +162,7 @@ input:focus, textarea:focus { border-color: var(--amber-dark); outline: 3px soli
 
 .page-lead { padding: 88px max(24px, calc((100vw - 1200px) / 2)) 64px; }
 .page-lead h1 { max-width: 15ch; }
-.demo-lead { background: linear-gradient(90deg, rgba(11,24,32,.96), rgba(11,24,32,.68)), url('/assets/night-archive-1200.webp') center 60% / cover; }
+.demo-lead { background: linear-gradient(90deg, rgba(11,24,32,.96), rgba(11,24,32,.68)), url('./assets/night-archive-1200.webp') center 60% / cover; }
 .legal-page { width: min(760px, 100% - 48px); min-height: 70vh; margin: 0 auto; padding: 96px 0; }
 .legal-page h1 { max-width: 15ch; font-size: clamp(2.8rem, 7vw, 4.7rem); }
 .legal-page h2 { margin: 56px 0 16px; font-family: var(--display); font-size: 2rem; }

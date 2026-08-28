@@ -1,4 +1,6 @@
 import './styles.css';
+import heroDesktop from './assets/night-archive-1200.webp';
+import heroMobile from './assets/night-archive-720.webp';
 import { answerMatches, clozeSentence, confusionPairs, containsWord, newItem, parseBulk, schedule } from './model';
 import { VocabularyStore } from './storage';
 import { cachedLicense, captureLicense, checkoutUrl, clearLicense, isPro, saveLicense, verifyLicense } from './license';
@@ -102,8 +104,8 @@ function homePage(): string {
       </div>
       <figure class="hero-art">
         <picture>
-          <source media="(max-width: 720px)" srcset="/assets/night-archive-720.webp" />
-          <img src="/assets/night-archive-1200.webp" width="1200" height="800" fetchpriority="high" alt="A blank notebook waits under a lamp beside a rainy night window." />
+          <source media="(max-width: 720px)" srcset="${heroMobile}" />
+          <img src="${heroDesktop}" width="1200" height="800" fetchpriority="high" alt="A blank notebook waits under a lamp beside a rainy night window." />
         </picture>
         <figcaption>Bring the sentence. Context Cloze supplies the blank.</figcaption>
       </figure>

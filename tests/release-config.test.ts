@@ -9,7 +9,7 @@ describe('static-host release configuration', () => {
     const config = JSON.parse(readFileSync(resolve(root, 'public/staticwebapp.config.json'), 'utf8')) as {
       responseOverrides?: Record<string, { rewrite?: string }>;
       navigationFallback?: { exclude?: string[] };
-      routes?: Array<{ route?: string; rewrite?: string }>;
+      routes?: Array<{ route?: string; rewrite?: string; headers?: Record<string, string> }>;
     };
     const page = readFileSync(resolve(root, 'public/404.html'), 'utf8');
     expect(config.responseOverrides?.['404']?.rewrite).toBe('/404.html');
@@ -22,5 +22,19 @@ describe('static-host release configuration', () => {
     ]));
     expect(page).toContain('<main id="main"');
     expect(page).toContain('<h1>This sentence has no ending</h1>');
+  });
+
+  it('@regression:hashed-assets-use-immutable-cache-policy', () => {
+    const config = JSON.parse(readFileSync(resolve(root, 'public/staticwebapp.config.json'), 'utf8')) as {
+      routes?: Array<{ route?: string; headers?: Record<string, string> }>;
+    };
+    const vite = readFileSync(resolve(root, 'vite.config.ts'), 'utf8');
+    expect(vite).toContain("entryFileNames: 'assets/[name]-[hash].js'");
+    expect(vite).toContain("assetFileNames: 'assets/[name]-[hash][extname]'");
+    expect(vite).toContain('offlineWorker()');
+    expect(config.routes).toContainEqual({
+      route: '/assets/*',
+      headers: { 'Cache-Control': 'public, max-age=31536000, immutable' }
+    });
   });
 });
