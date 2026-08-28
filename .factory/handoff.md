@@ -1,42 +1,48 @@
-# Context Cloze verification handoff
+# Context Cloze adversarial review 1 handoff
 
 ## Status
 
-**PASS — independent verification 3 completed 2026-08-28.** Candidate
-`1219456c24017e3d1c44841b1b8543582a4f301a` matches the live PWA at
-<https://context-cloze-vocab.sociobot.in> and is releasable.
+**FAIL — review completed 2026-08-28.** The detailed report is
+`.factory/review-1.md`. Product code was not modified.
 
-## What was verified
+## What was done
 
-- Clean `npm ci`, all 11 exact `.factory/claims.json` commands, full `npm test`
-  (6 Vitest + 20 Chromium tests), exact `npm run build`, and `npm run test:live`
-  all passed.
-- A cold first-read visit clearly explains sentence recall for independent
-  learners and exposes the required one-click isolated sample demo.
-- End-to-end demo, real-data validation/recovery, offline reload, 390 px
-  layout, keyboard skip/focus, reduced motion, live Axe, headers/caching,
-  privacy/network behaviour, checkout/invalid-license boundary, and API rate
-  limiting passed.
-- The complete live evidence, claim table, hashes, score, and severity report
-  are in `.factory/verification-3.md`.
+- Recorded cold first views of the live site at 390 × 844 and 1440 × 900.
+- Exercised the one-click demo, reset, exit, existing-real-data preservation,
+  separate IndexedDB stores, same-origin network behaviour, and offline reload.
+- Audited every landing/README sentence, headings, actions, terminology, and
+  claim-like statement.
+- Ran all 11 exact `.factory/claims.json` commands from a clean clone.
+- Rechecked all earlier verification defects against both live behaviour and
+  current source.
+- Checked titles, descriptions, canonicals, social metadata, 404 response,
+  header/footer, links, route focus/history, mobile targets, and visual identity.
+- Ran the full suite, production build, live verifier, factory URL verifier,
+  and Axe across every route.
 
-## Build and run
+## Verification commands
 
 ```sh
 npm ci
+npm test -- --grep @claim:<each-id>
 npm test
 npm run build
-npm run preview
 npm run test:live
+VERIFY_NODE_MODULES=/work/repo/node_modules /opt/fleet/lib/verify-url.sh \
+  https://context-cloze-vocab.sociobot.in /tmp/context-cloze-review1-evidence
 ```
 
-The production build writes `dist/`. Initial JavaScript is 10.97 KB gzip and
-CSS is 4.41 KB gzip. Mobile Lighthouse on the live home measured Performance
-99, Accessibility 100, LCP 1.701 s, CLS 0, and TBT 0 ms.
+All declared claims, the full 6-unit/20-browser suite, build, and live verifier
+pass. `dist/` is produced at 10.97 KB gzip JavaScript and 4.41 KB gzip CSS.
 
-## Known gaps
+## Findings left
 
-No product defects found. An old-worker to new-worker transition was not forced
-against production because that requires changing the deployment; the active
-worker, offline reload, versioned cache build output, and update handling were
-verified.
+The release remains blocked because `/demo` does not show an actual sample
+exercise in the first post-click viewport. Major findings also cover invisible
+Import JSON keyboard focus, `/offline` contrast, lost back-navigation scroll,
+stale/incomplete route metadata, and unlisted claims. Minor copy and external
+link issues are itemised as F-1-17 through F-1-20 in the review.
+
+Earlier checkout, touch-target, real-404, malformed-import, claim-test depth,
+and asset-caching defects remain fixed. No product source, tests, dependencies,
+or deployment configuration were changed during this review.
