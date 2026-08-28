@@ -45,7 +45,7 @@ Verification on 2026-08-28:
   present, and no image missing alt text.
 - Lighthouse 12.8.2 mobile: Performance 100, Accessibility 100, Best Practices
   100, SEO 100. FCP 0.95 s, LCP 1.40 s, CLS 0, TBT 0 ms.
-- Production payload: JS 30.10 KB raw / 10.60 KB gzip; CSS 15.43 KB raw /
+- Production payload: JS 30.99 KB raw / 10.86 KB gzip; CSS 15.43 KB raw /
   4.40 KB gzip; hero WebP 40 KB desktop / 16 KB mobile.
 - `npm audit`: zero known vulnerabilities.
 
