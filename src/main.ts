@@ -83,7 +83,7 @@ function render(): void {
 }
 
 function homePage(): string {
-  return `<main id="main">
+  return `<main id="main" tabindex="-1">
     <section class="hero">
       <div class="hero-copy">
         <p class="eyebrow">Your words · your sentences</p>
@@ -127,7 +127,7 @@ function homePage(): string {
 }
 
 function demoPage(): string {
-  return `<main id="main" class="demo-main">
+  return `<main id="main" class="demo-main" tabindex="-1">
     <section class="page-lead demo-lead"><p class="eyebrow">Eight words are ready</p><h1 tabindex="-1">Practise sample words in context</h1><p>Answer a due sentence, inspect the confusion pairs, or add a temporary word.</p></section>
     ${workspace('Sample practice desk')}
   </main>`;
@@ -210,19 +210,19 @@ function paidSection(): string {
 }
 
 function privacyPage(): string {
-  return `<main id="main" class="legal-page"><p class="eyebrow">Last updated 28 August 2026</p><h1 tabindex="-1">Your vocabulary stays in your browser</h1><p class="lede">Context Cloze stores words, sentences, schedules, and answers in IndexedDB on this device.</p><h2>What stays local</h2><p>Your practice data does not leave this browser. Demo data uses a separate database and never reads your real vocabulary.</p><h2>Exports and deletion</h2><p>Exports are files you ask the browser to create. Delete browser site data to remove all local records.</p><h2>License checks</h2><p>If you paste or buy a license, the token is stored locally. The app sends it only to the Sociobot billing API for verification.</p><h2>Analytics</h2><p>This app includes no advertising, behavioural analytics, or third-party scripts.</p><h2>Contact</h2><p>Email <a href="mailto:privacy@sociobot.in">privacy@sociobot.in</a> with a privacy question.</p></main>`;
+  return `<main id="main" class="legal-page" tabindex="-1"><p class="eyebrow">Last updated 28 August 2026</p><h1 tabindex="-1">Your vocabulary stays in your browser</h1><p class="lede">Context Cloze stores words, sentences, schedules, and answers in IndexedDB on this device.</p><h2>What stays local</h2><p>Your practice data does not leave this browser. Demo data uses a separate database and never reads your real vocabulary.</p><h2>Exports and deletion</h2><p>Exports are files you ask the browser to create. Delete browser site data to remove all local records.</p><h2>License checks</h2><p>If you paste or buy a license, the token is stored locally. The app sends it only to the Sociobot billing API for verification.</p><h2>Analytics</h2><p>This app includes no advertising, behavioural analytics, or third-party scripts.</p><h2>Contact</h2><p>Email <a href="mailto:privacy@sociobot.in">privacy@sociobot.in</a> with a privacy question.</p></main>`;
 }
 
 function termsPage(): string {
-  return `<main id="main" class="legal-page"><p class="eyebrow">Last updated 28 August 2026</p><h1 tabindex="-1">Use Context Cloze for your own material</h1><p class="lede">These terms cover the local app and its one-time personal license.</p><h2>Your sentences</h2><p>Only add text you have the right to store. You remain responsible for your vocabulary and example sentences.</p><h2>The service</h2><p>The app is provided as available. Keep JSON exports if losing browser storage would cause harm.</p><h2>One-time license</h2><p>A $12 purchase unlocks unlimited words and full confusion history for one person. Sociobot/Dodo is the merchant of record and handles refunds. A refunded or disputed purchase may revoke its license.</p><h2>Acceptable use</h2><p>Do not interfere with the site, billing API, or other users. The app is not a language course or professional translation service.</p><h2>Contact</h2><p>Email <a href="mailto:support@sociobot.in">support@sociobot.in</a> with a terms question.</p></main>`;
+  return `<main id="main" class="legal-page" tabindex="-1"><p class="eyebrow">Last updated 28 August 2026</p><h1 tabindex="-1">Use Context Cloze for your own material</h1><p class="lede">These terms cover the local app and its one-time personal license.</p><h2>Your sentences</h2><p>Only add text you have the right to store. You remain responsible for your vocabulary and example sentences.</p><h2>The service</h2><p>The app is provided as available. Keep JSON exports if losing browser storage would cause harm.</p><h2>One-time license</h2><p>A $12 purchase unlocks unlimited words and full confusion history for one person. Sociobot/Dodo is the merchant of record and handles refunds. A refunded or disputed purchase may revoke its license.</p><h2>Acceptable use</h2><p>Do not interfere with the site, billing API, or other users. The app is not a language course or professional translation service.</p><h2>Contact</h2><p>Email <a href="mailto:support@sociobot.in">support@sociobot.in</a> with a terms question.</p></main>`;
 }
 
 function offlinePage(): string {
-  return `<main id="main" class="state-page"><div class="horizon-mark" aria-hidden="true">C_____</div><p class="eyebrow">No connection needed</p><h1 tabindex="-1">Keep practising while offline</h1><p>Your saved words and due sessions are available. License checks wait until your connection returns.</p><a class="button primary spa-link" href="/">Open your practice desk</a></main>`;
+  return `<main id="main" class="state-page" tabindex="-1"><div class="horizon-mark" aria-hidden="true">C_____</div><p class="eyebrow">No connection needed</p><h1 tabindex="-1">Keep practising while offline</h1><p>Your saved words and due sessions are available. License checks wait until your connection returns.</p><a class="button primary spa-link" href="/">Open your practice desk</a></main>`;
 }
 
 function notFoundPage(): string {
-  return `<main id="main" class="state-page"><div class="horizon-mark" aria-hidden="true">_____?</div><p class="eyebrow">404 · Missing page</p><h1 tabindex="-1">This sentence has no ending</h1><p>The address does not match a page in Context Cloze.</p><a class="button primary spa-link" href="/">Return to your words</a></main>`;
+  return `<main id="main" class="state-page" tabindex="-1"><div class="horizon-mark" aria-hidden="true">_____?</div><p class="eyebrow">404 · Missing page</p><h1 tabindex="-1">This sentence has no ending</h1><p>The address does not match a page in Context Cloze.</p><a class="button primary spa-link" href="/">Return to your words</a></main>`;
 }
 
 function dueLabel(dueAt: number): string {
@@ -273,6 +273,12 @@ async function navigate(path: string, push = true): Promise<void> {
 }
 
 function bindEvents(): void {
+  document.querySelector<HTMLAnchorElement>('.skip-link')?.addEventListener('click', (event) => {
+    event.preventDefault();
+    const main = document.querySelector<HTMLElement>('#main');
+    main?.focus();
+    main?.scrollIntoView();
+  });
   document.querySelectorAll<HTMLAnchorElement>('a.spa-link').forEach((link) => link.addEventListener('click', (event) => {
     if (event.metaKey || event.ctrlKey || event.shiftKey || link.target) return;
     const url = new URL(link.href);
@@ -366,7 +372,10 @@ async function onImport(event: Event): Promise<void> {
     const count = await store.importData(parsed);
     await refresh(`Imported ${count} ${count === 1 ? 'word' : 'words'}.`, 'success');
   } catch (error) {
-    showNotice(error instanceof Error ? error.message : 'The import failed. Choose a valid JSON export.', 'error');
+    const message = error instanceof SyntaxError
+      ? 'This file is not valid JSON. Choose a Context Cloze JSON export.'
+      : error instanceof Error ? error.message : 'The import failed. Choose a valid JSON export.';
+    showNotice(message, 'error');
   }
 }
 

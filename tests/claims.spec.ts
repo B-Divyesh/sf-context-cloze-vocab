@@ -23,6 +23,26 @@ test('@claim:typed-scheduling a typed answer updates the due queue', async ({ pa
   await expect(page.getByText(/The answer is elusive/)).toBeVisible();
 });
 
+test('@claim:case-insensitive-marking capitalisation does not affect marking', async ({ page }) => {
+  await page.goto('/demo');
+  await page.getByRole('button', { name: 'Practise due words' }).click();
+  await page.getByLabel('Your answer').fill('ELUSIVE');
+  await page.getByRole('button', { name: 'Check answer' }).click();
+  await expect(page.getByText('Correct.', { exact: true })).toBeVisible();
+});
+
+test('@claim:full-session a full session includes every saved word', async ({ page }) => {
+  await page.goto('/demo');
+  await page.getByRole('button', { name: 'Practise all words' }).click();
+  await expect(page.getByText('Sentence 1 of 8', { exact: true })).toBeVisible();
+  for (let index = 0; index < 8; index += 1) {
+    await page.getByLabel('Your answer').fill('not the answer');
+    await page.getByRole('button', { name: 'Check answer' }).click();
+    await page.getByRole('button', { name: index === 7 ? 'Finish session' : 'Next sentence' }).click();
+  }
+  await expect(page.getByText('You answered 8 sentences.')).toBeVisible();
+});
+
 test('@claim:unicode-rtl Unicode and right-to-left words can be saved and answered', async ({ page }) => {
   await page.goto('/');
   await page.getByLabel('Word', { exact: true }).fill('مُثابر');
@@ -56,6 +76,14 @@ test('@claim:json-export exports all demo words and reviews', async ({ page }) =
   await page.locator('#import-file').setInputFiles({ name: 'context-cloze.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(imported)) });
   await expect(page.getByRole('status')).toHaveText('Imported 1 word.');
   await expect(page.locator('.word-list').getByText('resilient', { exact: true })).toBeVisible();
+});
+
+test('@regression:malformed-json-import gives an actionable error', async ({ page }) => {
+  await page.goto('/demo');
+  await page.locator('#import-file').setInputFiles({
+    name: 'not-context-cloze.json', mimeType: 'application/json', buffer: Buffer.from('{not json')
+  });
+  await expect(page.getByRole('status')).toHaveText('This file is not valid JSON. Choose a Context Cloze JSON export.');
 });
 
 test('@claim:confusion-pairs repeated wrong guesses are counted beside the intended word', async ({ page }) => {

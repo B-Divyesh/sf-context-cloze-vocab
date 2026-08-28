@@ -14,6 +14,20 @@
     "sandbox": "fresh demo; answer the oldest due sample and assert feedback"
   },
   {
+    "id": "case-insensitive-marking",
+    "claim": "Capitalisation does not affect marking.",
+    "where": "How sentence practice works",
+    "test": "npm test -- --grep @claim:case-insensitive-marking",
+    "sandbox": "fresh demo; answer elusive as ELUSIVE and assert correct feedback"
+  },
+  {
+    "id": "full-session",
+    "claim": "A full session practises every saved word.",
+    "where": "practice desk",
+    "test": "npm test -- --grep @claim:full-session",
+    "sandbox": "fresh demo; start all eight sample words, answer each, and assert the completed eight-sentence session"
+  },
+  {
     "id": "unicode-rtl",
     "claim": "Unicode and right-to-left words can be saved and answered.",
     "where": "README, product constraints",
@@ -44,7 +58,7 @@
   {
     "id": "offline-reload",
     "claim": "Works offline after the first visit.",
-    "where": "landing facts, README",
+    "where": "landing facts, offline page, README",
     "test": "npm test -- --grep @claim:offline-reload",
     "sandbox": "fresh demo; wait for service worker, go offline, reload, and assert sample data"
   },

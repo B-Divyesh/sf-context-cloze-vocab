@@ -49,7 +49,7 @@ button { color: inherit; }
 
 .site-header { position: relative; z-index: 10; display: flex; align-items: center; justify-content: space-between; gap: 24px; width: min(1400px, 100% - 48px); min-height: 80px; margin: 0 auto; border-bottom: 1px solid var(--line); }
 .wordmark { display: inline-flex; align-items: center; gap: 12px; color: var(--paper); font-family: var(--display); font-size: 1.2rem; text-decoration: none; }
-.wordmark-mark { display: grid; place-items: center; width: 40px; height: 40px; color: var(--ink); background: var(--amber); font-family: var(--body); font-size: .8rem; font-weight: 800; clip-path: polygon(0 0, 100% 0, 100% 72%, 72% 100%, 0 100%); }
+.wordmark-mark { display: grid; place-items: center; width: 44px; height: 44px; color: var(--ink); background: var(--amber); font-family: var(--body); font-size: .8rem; font-weight: 800; clip-path: polygon(0 0, 100% 0, 100% 72%, 72% 100%, 0 100%); }
 .site-header nav, .site-footer nav { display: flex; align-items: center; gap: 24px; }
 .site-header nav a { position: relative; padding: 14px 0; color: var(--paper-2); text-decoration: none; }
 .site-header nav a:hover, .site-header nav a[aria-current="page"] { color: var(--paper); }
@@ -197,8 +197,8 @@ input:focus, textarea:focus { border-color: var(--amber-dark); outline: 3px soli
   .site-header nav a:nth-child(2) { display: none; }
   .demo-banner { align-items: flex-start; justify-content: space-between; gap: 8px; padding: 8px 16px; }
   .demo-banner > span:first-child { max-width: 205px; }
-  .demo-actions { display: block; }
-  .demo-actions .text-button { display: block; min-height: 34px; padding: 2px; font-size: .78rem; }
+  .demo-actions { display: grid; gap: 4px; }
+  .demo-actions .text-button { display: block; min-height: 44px; padding: 8px 2px; font-size: .78rem; }
   .hero { grid-template-columns: minmax(0, 1fr); width: min(100% - 32px, 1400px); gap: 40px; padding: 48px 0 72px; }
   h1 { font-size: clamp(2.8rem, 15vw, 4rem); }
   .hero-actions { align-items: stretch; }
