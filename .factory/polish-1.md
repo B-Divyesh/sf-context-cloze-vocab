@@ -9,7 +9,7 @@ Review source: `0757512cba7dd619f19e61bf46cde850e7c63ab6`.
 | F-1-2 | Restore backup uses `.file-label:focus-within` with the designed amber focus ring. | `keyboard focus is visible on Restore backup` |
 | F-1-3 | Raised the offline mark opacity to a compliant amber contrast. | all-route Axe smoke including `/offline` |
 | F-1-4 | History entries save `scrollY`; popstate restores it while new navigations start at the top. | `back navigation restores the prior scroll position` |
-| F-1-5 | SPA metadata updates every route, production emits route-specific static documents, and 404 has canonical/OG/Twitter/apple-touch metadata. | `every app route updates its share metadata`; inspected `dist/{demo,privacy,terms,offline}/index.html` and `dist/404.html` |
+| F-1-5 | SPA metadata updates every route, production emits route-specific static documents, and 404 has canonical/OG/Twitter/apple-touch metadata. Route documents retain the real social image URL. | `every app route updates its share metadata`; inspected `dist/{demo,privacy,terms,offline}/index.html` and `dist/404.html`; live `/demo` curl check |
 | F-1-6 | Added the `typed-cloze` claim and a real save → blank → typed-answer flow; rewrote README plainly. | `@claim:typed-cloze` |
 | F-1-7 | Added the quantitative `demo-sample-count` claim. | `@claim:demo-sample-count` |
 | F-1-8 | Added the `due-queue` claim and observable due-question test. | `@claim:due-queue` |
@@ -27,5 +27,5 @@ Review source: `0757512cba7dd619f19e61bf46cde850e7c63ab6`.
 | F-1-20 | Made the checkout and Param Factory destinations visibly external. | landing/footer inspection; `@claim:checkout-link` |
 
 The static production routes are checked locally at `/demo`, `/privacy`,
-`/terms`, `/offline`, and `/404.html`. Deployment and cold live URL evidence is
-recorded in the handoff after the deployment step.
+`/terms`, `/offline`, and `/404.html`, and cold-live evidence is recorded in
+`.factory/handoff.md`.

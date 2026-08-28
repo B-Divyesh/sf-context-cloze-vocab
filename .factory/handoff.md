@@ -1,48 +1,59 @@
-# Context Cloze adversarial review 1 handoff
+# Context Cloze polish round 1 handoff
 
 ## Status
 
-**FAIL — review completed 2026-08-28.** The detailed report is
-`.factory/review-1.md`. Product code was not modified.
+**PASS.** All findings F-1-1 through F-1-20 from `review-1.md` are closed.
+The repair was committed as `726d7b2711966844f3c0a69615c8e58359bebe83` and
+the final metadata correction as `de7e46dc0c48f945f14500ab5ae3fc125289bfa4`.
+Both are pushed to `origin/main`.
 
-## What was done
+## What changed
 
-- Recorded cold first views of the live site at 390 × 844 and 1440 × 900.
-- Exercised the one-click demo, reset, exit, existing-real-data preservation,
-  separate IndexedDB stores, same-origin network behaviour, and offline reload.
-- Audited every landing/README sentence, headings, actions, terminology, and
-  claim-like statement.
-- Ran all 11 exact `.factory/claims.json` commands from a clean clone.
-- Rechecked all earlier verification defects against both live behaviour and
-  current source.
-- Checked titles, descriptions, canonicals, social metadata, 404 response,
-  header/footer, links, route focus/history, mobile targets, and visual identity.
-- Ran the full suite, production build, live verifier, factory URL verifier,
-  and Axe across every route.
+- `/demo` opens immediately on a seeded missing-word exercise with an answer
+  field, persistent isolated-demo banner, reset, and exit controls.
+- Every visitor-facing promise is either in `.factory/claims.json` with an
+  observable test or removed. The inventory has 19 isolated claim tests.
+- Rewrote first-screen, backup, privacy, paid, README, headings, and footer
+  copy in plain language; standardised on “word list” and “practise.”
+- Fixed visible backup-control focus, offline contrast, back/forward scroll,
+  all route metadata, static route documents, 404 metadata, and visible
+  external-link labels.
+- Preserved the night-archive visual system; the first mobile demo viewport is
+  captured at `/tmp/context-cloze-polish/live-demo-mobile.png`.
 
-## Verification commands
+## Verification evidence
 
-```sh
-npm ci
-npm test -- --grep @claim:<each-id>
-npm test
-npm run build
-npm run test:live
-VERIFY_NODE_MODULES=/work/repo/node_modules /opt/fleet/lib/verify-url.sh \
-  https://context-cloze-vocab.sociobot.in /tmp/context-cloze-review1-evidence
-```
+- Fresh clone: `/tmp/context-cloze-clean.848RiZ`; `npm ci` passed with 0
+  vulnerabilities.
+- Every exact command declared in `.factory/claims.json` passed individually:
+  `demo-sample-count`, `demo-isolation`, `typed-cloze`, `typed-scheduling`,
+  `due-queue`, `case-insensitive-marking`, `full-session`, `unicode-rtl`,
+  `unicode-normalisation`, `backup-roundtrip`, `confusion-pairs`,
+  `no-tracking-resources`, `local-storage`, `checkout-link`,
+  `license-token-privacy`, `clear-site-data`, `offline-reload`, `free-limit`,
+  and `paid-license`.
+- Local `npm test`: PASS — 6 unit tests and 32 Chromium tests, including Axe on
+  `/`, `/demo`, `/privacy`, `/terms`, `/offline`, and `/404.html`; keyboard,
+  mobile, metadata, scroll-restoration, privacy, and offline coverage pass.
+- Local `npm run build`: PASS — `dist/` generated; initial JS 11.19 KB gzip,
+  CSS 4.45 KB gzip.
+- Local `/opt/fleet/lib/verify-url.sh`: PASS — title, language, one h1, main,
+  image alt text, labelled buttons, and no console errors.
+- `npm run test:live`: PASS — live home 200, unknown route 404, hosted Dodo
+  checkout redirect 303, invalid license rejected.
+- Deployed with `/opt/fleet/lib/deploy-static.sh context-cloze-vocab dist`.
+  Azure deployments `0cbea20d-f4b3-4e34-927f-7f43d984531d` and final
+  `903b7822-f398-45af-a2bb-839eb010804d` succeeded; the
+  custom domain is ready and HTTPS returns 200.
 
-All declared claims, the full 6-unit/20-browser suite, build, and live verifier
-pass. `dist/` is produced at 10.97 KB gzip JavaScript and 4.41 KB gzip CSS.
+## Live recheck
 
-## Findings left
+Cold `https://context-cloze-vocab.sociobot.in/demo` returns “Demo — Context
+Cloze”, a route-specific canonical/OG/Twitter payload, and the one-question
+demo on a 390 px screenshot. The live root verifier passed with no page or
+console errors. The live route image URL was rechecked after deployment as
+`/context-cloze-og.jpg` (not a rewritten route path).
 
-The release remains blocked because `/demo` does not show an actual sample
-exercise in the first post-click viewport. Major findings also cover invisible
-Import JSON keyboard focus, `/offline` contrast, lost back-navigation scroll,
-stale/incomplete route metadata, and unlisted claims. Minor copy and external
-link issues are itemised as F-1-17 through F-1-20 in the review.
+## Known gaps
 
-Earlier checkout, touch-target, real-404, malformed-import, claim-test depth,
-and asset-caching defects remain fixed. No product source, tests, dependencies,
-or deployment configuration were changed during this review.
+None.
