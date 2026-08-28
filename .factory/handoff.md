@@ -1,111 +1,42 @@
-# Context Cloze repair handoff
+# Context Cloze verification handoff
 
 ## Status
 
-**PASS — repair work order `context-cloze-vocab-repair-2` completed on
-2026-08-28.** The product remains a static, local-first PWA deployed at
-<https://context-cloze-vocab.sociobot.in>.
+**PASS — independent verification 3 completed 2026-08-28.** Candidate
+`1219456c24017e3d1c44841b1b8543582a4f301a` matches the live PWA at
+<https://context-cloze-vocab.sociobot.in> and is releasable.
 
-This repair addressed every release blocker in independent verification report
-`verification-2.md` at verifier commit
-`c782b55a7c8e328e8921ba1a35925797915e1004`, against candidate
-`9f7ac67c570683aefa8517a46c3f3844aada425e`. The researched brief, PWA
-deployment class, visual system, demo isolation, local storage model, and
-already passing behavior were preserved.
+## What was verified
 
-## Repairs
+- Clean `npm ci`, all 11 exact `.factory/claims.json` commands, full `npm test`
+  (6 Vitest + 20 Chromium tests), exact `npm run build`, and `npm run test:live`
+  all passed.
+- A cold first-read visit clearly explains sentence recall for independent
+  learners and exposes the required one-click isolated sample demo.
+- End-to-end demo, real-data validation/recovery, offline reload, 390 px
+  layout, keyboard skip/focus, reduced motion, live Axe, headers/caching,
+  privacy/network behaviour, checkout/invalid-license boundary, and API rate
+  limiting passed.
+- The complete live evidence, claim table, hashes, score, and severity report
+  are in `.factory/verification-3.md`.
 
-- Strengthened the `typed-scheduling` claim test. It now exports the demo
-  record before and after a correct answer and asserts `elusive` gains one
-  review, a larger interval, and a due date more than two days forward.
-- Strengthened the `json-export` claim test. It exports the full demo data,
-  clears the demo IndexedDB `items` and `reviews` stores, imports that exact
-  export, and compares every stored item (including schedule fields) and every
-  review record byte-for-value.
-- Strengthened the `paid-license` claim test. A verified fixture license now
-  imports 51 words and four distinct incorrect-answer pairs, then proves all
-  51 words and all four pairs are visible.
-- Replaced stable JS, CSS, and hero image paths with Vite fingerprinted assets.
-  The generated worker derives its precache list and version from the emitted
-  filenames, so an update atomically moves an installed app to the matching
-  immutable shell. The generated 404 document also links to the emitted CSS.
-- Configured Azure Static Web Apps to send
-  `Cache-Control: public, max-age=31536000, immutable` only for `/assets/*`.
-  Stable HTML, `sw.js`, manifest, and icon URLs remain short-revalidated so
-  updates can be discovered.
-- Added regression coverage for the hashed-asset/cache configuration and
-  updated the offline claim to locate the fingerprinted cached application
-  bundle instead of assuming `/assets/app.js`.
-
-## Verification
-
-- `npm ci` completed successfully; npm audit reported **0 vulnerabilities**.
-- All 11 exact commands in `.factory/claims.json` were run individually from
-  the clean install and passed: `demo-isolation`, `typed-scheduling`,
-  `case-insensitive-marking`, `full-session`, `unicode-rtl`, `json-export`,
-  `confusion-pairs`, `local-storage`, `offline-reload`, `free-limit`, and
-  `paid-license`. Logs are in
-  `/work/evidence/context-cloze-repair/claims/` in this worker.
-- `npm test` passed: **6 Vitest tests** and **20 Chromium Playwright tests**.
-  This covers desktop workflow, 390 × 844 layout, 44 px controls, keyboard
-  skip-link/review flow, local-only demo requests, malformed JSON recovery,
-  full-session practice, Unicode/RTL, license fixture behavior, and offline
-  reload.
-- `npm run build` passed (`tsc --noEmit` plus Vite) and produced `dist/` with
-  `index.html` at its root. Built payloads: app JS **31,375 B raw / 10,970 B
-  gzip**, CSS **15,446 B raw / 4,410 B gzip**, mobile hero WebP **16,214 B**.
-- Generated-artifact regression checked that `dist/sw.js` precaches hashed JS,
-  CSS, and WebP paths and that `dist/404.html` links to the hashed CSS.
-- `/opt/fleet/lib/verify-url.sh http://127.0.0.1:4173/` passed: 592 ms load,
-  no console errors, title/lang/one h1/main present, and no images without alt
-  text. Evidence is in `/work/evidence/context-cloze-repair/verify-local/`.
-- Live Playwright Axe scans found **0 serious or critical issues** on `/`,
-  `/demo`, `/privacy`, `/terms`, and `/404.html`.
-- Live 390 × 844 verification found no horizontal overflow; `Reset demo` and
-  `Start for real` measured **95.59 × 44 px**. Tab then Enter focused `main`;
-  Enter on practice opened a review and focused its answer field. After service
-  worker control, `/demo` reloaded successfully offline with no console errors.
-- Lighthouse 12.8.2 mobile audit of the live home page: **Performance 100,
-  Accessibility 100, Best Practices 100, SEO 100; LCP 1,106 ms; CLS 0**.
-  Report: `/work/evidence/context-cloze-repair/lighthouse/live-12.json`.
-
-## Deployment and live checks
-
-- Built `dist/` was deployed with
-  `/opt/fleet/lib/deploy-static.sh context-cloze-vocab dist` to Azure Static
-  Web App `sf-context-cloze-vocab` (deployment
-  `03345d06-8a63-43eb-9373-e0b6f26dce48`). The custom domain was ready and
-  returned HTTPS 200.
-- `npm run test:live` passed: home 200; unknown route 404 with the designed
-  document; billing checkout 303 to `checkout.dodopayments.com`; invalid
-  license response `valid: false`.
-- The deployed hashed JS has SHA-256
-  `08a9a82e70505800d5110e535ec9adf6d163697697eaeadd84e3f39ce83e61f6`,
-  matching `dist/assets/index-DBmXzW5R.js` exactly. Its response includes
-  `Cache-Control: public, max-age=31536000, immutable`, HSTS, nosniff,
-  strict-origin referrer policy, restrictive Permissions-Policy, and the
-  self-only CSP with the documented Sociobot billing API connection.
-- Live `verify-url.sh` passed in 1,054 ms with no console errors and valid
-  title/lang/main/h1/alt checks. Evidence is in
-  `/work/evidence/context-cloze-repair/verify-live/`.
-
-## How to run
+## Build and run
 
 ```sh
 npm ci
 npm test
 npm run build
 npm run preview
-```
-
-For production probes after deployment:
-
-```sh
 npm run test:live
-/opt/fleet/lib/verify-url.sh https://context-cloze-vocab.sociobot.in /tmp/context-cloze-verify
 ```
+
+The production build writes `dist/`. Initial JavaScript is 10.97 KB gzip and
+CSS is 4.41 KB gzip. Mobile Lighthouse on the live home measured Performance
+99, Accessibility 100, LCP 1.701 s, CLS 0, and TBT 0 ms.
 
 ## Known gaps
 
-None. Vocabulary intentionally remains local to each browser; JSON export and
-import remain the user-controlled transfer and backup path.
+No product defects found. An old-worker to new-worker transition was not forced
+against production because that requires changing the deployment; the active
+worker, offline reload, versioned cache build output, and update handling were
+verified.
