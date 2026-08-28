@@ -1,4 +1,24 @@
-# Context Cloze v1 handoff
+# Context Cloze independent verification handoff
+
+## Verification status: FAIL — do not release
+
+Independent verification on 2026-08-28 tested commit
+`502c5b244638d39c6dc9d5fb23992d24f363614c` against
+`https://context-cloze-vocab.sociobot.in`.
+
+The deployed static build matches the candidate byte-for-byte and the free,
+demo, PWA, accessibility, privacy, and test/build paths largely pass. Release
+is blocked because the landing-page purchase action points to a live Sociobot
+checkout endpoint that returns HTTP 404:
+
+```
+GET https://api.sociobot.in/api/v1/products/context-cloze-vocab/checkout
+{"error":"enabled factory product","status":404}
+```
+
+The advertised $12 one-time license cannot be bought. See
+[`verification.md`](verification.md) for complete reproducible evidence,
+additional defects, and required retest steps.
 
 ## What was built
 
@@ -34,7 +54,8 @@ npm run preview
 The exact deploy build command is `npm run build`. Output lands in `dist/`, and
 `dist/index.html` is at its root.
 
-Verification on 2026-08-28:
+Builder verification on 2026-08-28 (superseded for release decision by the
+independent verification above):
 
 - `npm test`: 4 unit tests and 15 Playwright tests passed.
 - Every `.factory/claims.json` command uses the isolated demo and passes.
@@ -54,9 +75,9 @@ review is in `.factory/copy-audit.md`.
 
 ## Known gaps and release notes
 
-- The factory must register `context-cloze-vocab` with the Sociobot billing API
-  before the live checkout can sell licenses. No product ID or secret is stored
-  in this repository.
+- **Release blocker, confirmed live:** the factory must register/enable
+  `context-cloze-vocab` with the Sociobot billing API before checkout can sell
+  licenses. No product ID or secret is stored in this repository.
 - Vocabulary does not sync between devices. JSON export/import is the explicit
   ownership and transfer path for v1.
 - Browser storage can be cleared by the browser or user. The product explains
@@ -66,5 +87,7 @@ review is in `.factory/copy-audit.md`.
 
 ## Next steps
 
-Register the billing product, deploy `dist/`, run the claim suite against the
-production URL, and smoke-test a real purchase return before announcing sales.
+Register/enable the billing product, verify a real checkout and return-token
+flow, correct the mobile touch targets, real HTTP 404 response, claim inventory
+and malformed-import recovery copy, then rerun independent verification before
+announcing sales.
