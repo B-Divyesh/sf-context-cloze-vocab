@@ -1,0 +1,65 @@
+[
+  {
+    "id": "demo-isolation",
+    "claim": "Demo changes never enter the learner's real vocabulary.",
+    "where": "landing action, demo banner, README",
+    "test": "npm test -- --grep @claim:demo-isolation",
+    "sandbox": "fresh browser context; add a demo word, leave demo, assert the real store is empty"
+  },
+  {
+    "id": "typed-scheduling",
+    "claim": "Typed answers update the word's due schedule.",
+    "where": "practice desk, README",
+    "test": "npm test -- --grep @claim:typed-scheduling",
+    "sandbox": "fresh demo; answer the oldest due sample and assert feedback"
+  },
+  {
+    "id": "unicode-rtl",
+    "claim": "Unicode and right-to-left words can be saved and answered.",
+    "where": "README, product constraints",
+    "test": "npm test -- --grep @claim:unicode-rtl",
+    "sandbox": "fresh real store; save and answer an Arabic word and sentence"
+  },
+  {
+    "id": "json-export",
+    "claim": "JSON import and export preserve words, schedules, and answer history.",
+    "where": "data panel, README",
+    "test": "npm test -- --grep @claim:json-export",
+    "sandbox": "fresh demo; download JSON, assert eight items and five reviews, then import a valid item"
+  },
+  {
+    "id": "confusion-pairs",
+    "claim": "Repeated wrong guesses are counted beside the intended word.",
+    "where": "practice desk, README",
+    "test": "npm test -- --grep @claim:confusion-pairs",
+    "sandbox": "fresh demo; assert the repeated vague → elusive sample pair is counted twice"
+  },
+  {
+    "id": "local-storage",
+    "claim": "Vocabulary stays in the browser during practice.",
+    "where": "landing facts, privacy page, README",
+    "test": "npm test -- --grep @claim:local-storage",
+    "sandbox": "fresh demo; intercept the full practice flow and assert no cross-origin requests"
+  },
+  {
+    "id": "offline-reload",
+    "claim": "Works offline after the first visit.",
+    "where": "landing facts, README",
+    "test": "npm test -- --grep @claim:offline-reload",
+    "sandbox": "fresh demo; wait for service worker, go offline, reload, and assert sample data"
+  },
+  {
+    "id": "free-limit",
+    "claim": "The free tier stores 50 words; a $12 one-time license removes that limit.",
+    "where": "landing facts, paid section, README",
+    "test": "npm test -- --grep @claim:free-limit",
+    "sandbox": "fresh landing page; assert the limit and price are shown"
+  },
+  {
+    "id": "paid-license",
+    "claim": "A valid one-time license unlocks unlimited words and full confusion history.",
+    "where": "paid section, README",
+    "test": "npm test -- --grep @claim:paid-license",
+    "sandbox": "fresh landing page; intercept the billing verification fixture and assert the returned license activates the paid view"
+  }
+]

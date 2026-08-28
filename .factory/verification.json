@@ -1,0 +1,32 @@
+{
+  "date": "2026-08-28",
+  "url": "http://127.0.0.1:4173/",
+  "lighthouse": {
+    "version": "12.8.2",
+    "performance": 100,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100,
+    "firstContentfulPaintMs": 951,
+    "largestContentfulPaintMs": 1403,
+    "cumulativeLayoutShift": 0,
+    "totalBlockingTimeMs": 0
+  },
+  "verifyUrl": {
+    "loadMs": 611,
+    "consoleErrors": 0,
+    "title": "Context Cloze — practise words in sentences",
+    "lang": "en",
+    "h1Count": 1,
+    "hasMain": true,
+    "imagesMissingAlt": 0
+  },
+  "bundles": {
+    "javascriptRawKb": 30.1,
+    "javascriptGzipKb": 10.6,
+    "cssRawKb": 15.43,
+    "cssGzipKb": 4.4,
+    "desktopHeroKb": 40,
+    "mobileHeroKb": 16
+  }
+}
