@@ -15,13 +15,15 @@ describe('static-host release configuration', () => {
     expect(config.responseOverrides?.['404']?.rewrite).toBe('/404.html');
     expect(config.navigationFallback?.exclude).toContain('/*');
     expect(config.routes).toEqual(expect.arrayContaining([
-      { route: '/demo', rewrite: '/index.html' },
-      { route: '/privacy', rewrite: '/index.html' },
-      { route: '/terms', rewrite: '/index.html' },
-      { route: '/offline', rewrite: '/index.html' }
+      { route: '/demo', rewrite: '/demo/index.html' },
+      { route: '/privacy', rewrite: '/privacy/index.html' },
+      { route: '/terms', rewrite: '/terms/index.html' },
+      { route: '/offline', rewrite: '/offline/index.html' }
     ]));
     expect(page).toContain('<main id="main"');
     expect(page).toContain('<h1>This sentence has no ending</h1>');
+    expect(page).toContain('property="og:title"');
+    expect(page).toContain('apple-touch-icon');
   });
 
   it('@regression:hashed-assets-use-immutable-cache-policy', () => {

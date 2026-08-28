@@ -1,5 +1,12 @@
 [
   {
+    "id": "demo-sample-count",
+    "claim": "The demo opens eight sample words.",
+    "where": "landing action, demo desk",
+    "test": "npm test -- --grep @claim:demo-sample-count",
+    "sandbox": "fresh /demo; assert the sample word-list count is eight"
+  },
+  {
     "id": "demo-isolation",
     "claim": "Demo changes never enter the learner's real vocabulary.",
     "where": "landing action, demo banner, README",
@@ -7,11 +14,25 @@
     "sandbox": "fresh browser context; add a demo word, leave demo, assert the real store is empty"
   },
   {
+    "id": "typed-cloze",
+    "claim": "Each saved word becomes a blank that you can answer by typing.",
+    "where": "How sentence practice works, practice desk, README",
+    "test": "npm test -- --grep @claim:typed-cloze",
+    "sandbox": "fresh real store; save a word and sentence, start practice, inspect the blank, type the answer, and observe correct feedback"
+  },
+  {
     "id": "typed-scheduling",
     "claim": "Typed answers update the word's due schedule.",
     "where": "practice desk, README",
     "test": "npm test -- --grep @claim:typed-scheduling",
     "sandbox": "fresh demo; export before and after answering elusive, then assert its stored review count, interval, and due date advance"
+  },
+  {
+    "id": "due-queue",
+    "claim": "Due words return as questions.",
+    "where": "How sentence practice works",
+    "test": "npm test -- --grep @claim:due-queue",
+    "sandbox": "fresh real store; save a word due now and assert the due practice question contains its blank"
   },
   {
     "id": "case-insensitive-marking",
@@ -35,10 +56,17 @@
     "sandbox": "fresh real store; save and answer an Arabic word and sentence"
   },
   {
-    "id": "json-export",
-    "claim": "JSON import and export preserve words, schedules, and answer history.",
+    "id": "unicode-normalisation",
+    "claim": "Accented answers match whether you type composed or decomposed characters.",
+    "where": "README",
+    "test": "npm test -- --grep @claim:unicode-normalisation",
+    "sandbox": "fresh real store; save Café, answer with decomposed cafe accent, and observe correct feedback"
+  },
+  {
+    "id": "backup-roundtrip",
+    "claim": "Backups preserve words, schedules, and answer history.",
     "where": "data panel, README",
-    "test": "npm test -- --grep @claim:json-export",
+    "test": "npm test -- --grep @claim:backup-roundtrip",
     "sandbox": "fresh demo; export, clear its IndexedDB records, import that export, then compare every item schedule field and review record"
   },
   {
@@ -49,11 +77,39 @@
     "sandbox": "fresh demo; assert the repeated vague → elusive sample pair is counted twice"
   },
   {
+    "id": "no-tracking-resources",
+    "claim": "This app includes no advertising, behavioural analytics, third-party fonts, or third-party scripts.",
+    "where": "privacy page, README",
+    "test": "npm test -- --grep @claim:no-tracking-resources",
+    "sandbox": "fresh context; visit home, demo, privacy, and terms while recording every loaded resource and request"
+  },
+  {
     "id": "local-storage",
     "claim": "Vocabulary stays in the browser during practice.",
     "where": "landing facts, privacy page, README",
     "test": "npm test -- --grep @claim:local-storage",
     "sandbox": "fresh demo; intercept the full practice flow and assert no cross-origin requests"
+  },
+  {
+    "id": "checkout-link",
+    "claim": "The purchase link opens Sociobot's secure checkout.",
+    "where": "paid section",
+    "test": "npm test -- --grep @claim:checkout-link",
+    "sandbox": "fresh landing page; assert the visible purchase link targets the product's Sociobot checkout endpoint"
+  },
+  {
+    "id": "license-token-privacy",
+    "claim": "A license token stays in browser storage and is sent only to Sociobot to check the license.",
+    "where": "privacy page, README",
+    "test": "npm test -- --grep @claim:license-token-privacy",
+    "sandbox": "fresh landing page with returned license; assert namespaced local storage and the only token-bearing request destination"
+  },
+  {
+    "id": "clear-site-data",
+    "claim": "Browser site-data controls remove stored app data.",
+    "where": "privacy page, README",
+    "test": "npm test -- --grep @claim:clear-site-data",
+    "sandbox": "fresh browser; create real and demo records plus a license, clear site storage, and assert no app records remain"
   },
   {
     "id": "offline-reload",

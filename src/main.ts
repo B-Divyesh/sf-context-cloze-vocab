@@ -33,14 +33,14 @@ function routeFor(path: string): AppRoute {
 
 const escapeHtml = (value: string): string => value.replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char]!);
 
-function pageMeta(current: AppRoute): { title: string; description: string } {
+function pageMeta(current: AppRoute): { title: string; description: string; social: string } {
   switch (current) {
-    case 'demo': return { title: 'Demo — Context Cloze', description: 'Practise eight sample words in an isolated Context Cloze workspace.' };
-    case 'privacy': return { title: 'Privacy — Context Cloze', description: 'How Context Cloze stores vocabulary and handles license checks.' };
-    case 'terms': return { title: 'Terms — Context Cloze', description: 'Terms for using Context Cloze and its one-time paid license.' };
-    case 'offline': return { title: 'Offline — Context Cloze', description: 'Context Cloze is ready to work without a connection.' };
-    case 'not-found': return { title: 'Page not found — Context Cloze', description: 'This Context Cloze page does not exist.' };
-    default: return { title: 'Context Cloze — practise words in sentences', description: 'Paste your own words and sentences, then practise retrieving each word in context. Your vocabulary stays on your device.' };
+    case 'demo': return { title: 'Demo — Context Cloze', description: 'Practise eight sample words in a separate sample workspace.', social: 'Try a sample missing-word practice session.' };
+    case 'privacy': return { title: 'Privacy — Context Cloze', description: 'How Context Cloze stores your word list and checks a license.', social: 'See how Context Cloze handles your word list.' };
+    case 'terms': return { title: 'Terms — Context Cloze', description: 'Terms for Context Cloze and its one-time personal license.', social: 'Read the terms for Context Cloze.' };
+    case 'offline': return { title: 'Offline — Context Cloze', description: 'Continue practising saved words without a connection.', social: 'Context Cloze keeps saved practice available offline.' };
+    case 'not-found': return { title: 'Page not found — Context Cloze', description: 'This Context Cloze page does not exist.', social: 'This Context Cloze page does not exist.' };
+    default: return { title: 'Context Cloze — practise words in sentences', description: 'Paste your own words and sentences, then practise retrieving each word in context. Your word list stays on your device.', social: 'Type the missing word in sentences you chose.' };
   }
 }
 
@@ -49,12 +49,15 @@ function updateMeta(): void {
   document.title = meta.title;
   document.querySelector<HTMLMetaElement>('meta[name="description"]')!.content = meta.description;
   document.querySelector<HTMLLinkElement>('link[rel="canonical"]')!.href = `https://context-cloze-vocab.sociobot.in${location.pathname}`;
+  for (const selector of ['meta[property="og:title"]', 'meta[name="twitter:title"]']) document.querySelector<HTMLMetaElement>(selector)!.content = meta.title;
+  for (const selector of ['meta[property="og:description"]', 'meta[name="twitter:description"]']) document.querySelector<HTMLMetaElement>(selector)!.content = meta.social;
+  document.querySelector<HTMLMetaElement>('meta[property="og:url"]')!.content = `https://context-cloze-vocab.sociobot.in${location.pathname}`;
 }
 
 function header(): string {
   return `
     <a class="skip-link" href="#main">Skip to main content</a>
-    ${route === 'demo' ? `<aside class="demo-banner" aria-label="Demo status"><span><strong>Demo</strong> — sample data, nothing is saved to your vocabulary</span><span class="demo-actions"><button class="text-button" data-action="reset-demo">Reset demo</button><button class="text-button" data-action="leave-demo">Start for real</button></span></aside>` : ''}
+    ${route === 'demo' ? `<aside class="demo-banner" aria-label="Demo status"><span><strong>Demo</strong> — sample data, nothing is saved to your word list</span><span class="demo-actions"><button class="text-button" data-action="reset-demo">Reset demo</button><button class="text-button" data-action="leave-demo">Start for real</button></span></aside>` : ''}
     <header class="site-header">
       <a class="wordmark spa-link" href="/" aria-label="Context Cloze home"><span aria-hidden="true" class="wordmark-mark">C_</span><span>Context Cloze</span></a>
       <nav aria-label="Main navigation">
@@ -68,7 +71,7 @@ function header(): string {
 function footer(): string {
   return `<footer class="site-footer">
     <p>Type the missing word in sentences you chose.</p>
-    <nav aria-label="Footer navigation"><a class="spa-link" href="/privacy">Privacy</a><a class="spa-link" href="/terms">Terms</a><a href="https://hello-factory.sociobot.in" rel="external">Built by Param Factory</a></nav>
+    <nav aria-label="Footer navigation"><a class="spa-link" href="/privacy">Privacy</a><a class="spa-link" href="/terms">Terms</a><a href="https://hello-factory.sociobot.in" rel="external">Built by Param Factory (external site)</a></nav>
     <p class="build">Version 1.0.0 · Original generated scene</p>
   </footer>`;
 }
@@ -94,12 +97,12 @@ function homePage(): string {
         <div class="hero-actions">
           <a class="button primary spa-link" href="/demo">Try it with sample data</a>
           <a class="button secondary" href="#practice">Add your words</a>
-          <p>Opens eight sample words. Your vocabulary stays untouched.</p>
+          <p>Opens eight sample words. Your word list stays untouched.</p>
         </div>
         <ul class="plain-facts" aria-label="Product facts">
-          <li><span aria-hidden="true">●</span> Stored on this device</li>
+        <li><span aria-hidden="true">●</span> Stored on this device</li>
           <li><span aria-hidden="true">●</span> Works offline after your first visit</li>
-          <li><span aria-hidden="true">●</span> Free for 50 words</li>
+        <li><span aria-hidden="true">●</span> Free for 50 words</li>
         </ul>
       </div>
       <figure class="hero-art">
@@ -115,14 +118,14 @@ function homePage(): string {
       <p class="eyebrow">A small daily loop</p>
       <h2>How sentence practice works</h2>
       <ol class="steps">
-        <li><span>01</span><div><h3>Add words in context</h3><p>Paste a word and a sentence you trust. The word becomes the blank.</p></div></li>
-        <li><span>02</span><div><h3>Type what belongs</h3><p>Due words return as open questions. Capitalisation does not affect marking.</p></div></li>
-        <li><span>03</span><div><h3>Notice close calls</h3><p>Wrong guesses become confusion pairs. Use them to sharpen word choice.</p></div></li>
+        <li><span>01</span><div><h3>Add words in context</h3><p>Paste a word and a sentence you trust. Each saved word becomes a blank.</p></div></li>
+        <li><span>02</span><div><h3>Type what belongs</h3><p>Due words return as questions. Capitalisation does not affect marking.</p></div></li>
+        <li><span>03</span><div><h3>Review words you confuse</h3><p>Wrong guesses become confusion pairs. Review the words you confused.</p></div></li>
       </ol>
     </section>
     <section class="limits-section">
       <div><p class="eyebrow">A quiet tool, not a course</p><h2>You choose every sentence</h2></div>
-      <div><p>Context Cloze has no dictionary, generated text, public decks, social feed, or streak.</p><p>Only add text you may store. Your vocabulary remains in this browser unless you export it.</p></div>
+      <div><p>Only add text you may store. Your word list remains in this browser unless you download a backup.</p></div>
     </section>
     ${paidSection()}
   </main>`;
@@ -130,20 +133,19 @@ function homePage(): string {
 
 function demoPage(): string {
   return `<main id="main" class="demo-main" tabindex="-1">
-    <section class="page-lead demo-lead"><p class="eyebrow">Eight words are ready</p><h1 tabindex="-1">Practise sample words in context</h1><p>Answer a due sentence, inspect the confusion pairs, or add a temporary word.</p></section>
-    ${workspace('Sample practice desk')}
+    <h1 class="sr-only" tabindex="-1">Practise sample words in context</h1>
+    ${workspace('Sample practice desk', true)}
   </main>`;
 }
 
-function workspace(title: string): string {
+function workspace(title: string, isDemoDesk = false): string {
   const now = Date.now();
   const due = items.filter((item) => item.dueAt <= now).sort((a, b) => a.dueAt - b.dueAt);
   const pairs = confusionPairs(items, reviews);
   return `<section id="practice" class="workspace" aria-labelledby="desk-title">
-    <div class="workspace-head"><div><p class="eyebrow">Local practice</p><h2 id="desk-title">${title}</h2></div>
-      <div class="stats" aria-label="Vocabulary status"><span><strong>${items.length}</strong> words</span><span><strong>${due.length}</strong> due now</span><span><strong>${reviews.length}</strong> answers</span></div>
-    </div>
-    ${isLoading ? `<div class="loading" role="status"><span></span>Opening your vocabulary…</div>` : items.length === 0 ? emptyWorkspace() : practicePanel(due)}
+    ${isDemoDesk ? '' : `<div class="workspace-head"><div><p class="eyebrow">Local practice</p><h2 id="desk-title">${title}</h2></div><div class="stats" aria-label="Word list status"><span><strong>${items.length}</strong> words</span><span><strong>${due.length}</strong> due now</span><span><strong>${reviews.length}</strong> answers</span></div></div>`}
+    ${isLoading ? `<div class="loading" role="status"><span></span>Opening your word list…</div>` : items.length === 0 ? emptyWorkspace() : practicePanel(due)}
+    ${isDemoDesk ? `<div class="workspace-head demo-stats"><div><p class="eyebrow">Sample word list</p><h2 id="desk-title">${title}</h2></div><div class="stats" aria-label="Sample word list status"><span><strong>${items.length}</strong> words</span><span><strong>${due.length}</strong> due now</span><span><strong>${reviews.length}</strong> answers</span></div></div>` : ''}
     <div class="desk-grid">
       ${addPanel()}
       ${libraryPanel()}
@@ -169,6 +171,7 @@ function practicePanel(due: VocabItem[]): string {
         <label for="answer">Your answer</label>
         <div class="answer-row"><input id="answer" name="answer" dir="auto" autocomplete="off" autocapitalize="off" spellcheck="false" ${feedback ? 'disabled' : ''} required /><button class="button primary" type="submit" ${feedback ? 'disabled' : ''}>Check answer</button></div>
       </form>
+      ${route === 'demo' && !feedback ? `<button class="text-button session-switch" data-action="start-all">Practise all eight sample words</button>` : ''}
       ${feedback ? `<div class="feedback ${feedback.correct ? 'correct' : 'incorrect'}" role="status"><strong>${feedback.correct ? 'Correct.' : 'Not this time.'}</strong> The answer is <bdi>${escapeHtml(feedback.answer)}</bdi>.${!feedback.correct ? ` You typed <bdi>${escapeHtml(feedback.typed || 'nothing')}</bdi>.` : ''}</div><button class="button primary" data-action="next-review">${practiceIndex + 1 === practice.length ? 'Finish session' : 'Next sentence'}</button>` : ''}
     </section>`;
   }
@@ -193,7 +196,7 @@ function addPanel(): string {
 
 function libraryPanel(): string {
   const sorted = [...items].sort((a, b) => a.word.localeCompare(b.word));
-  return `<section class="desk-panel library"><div class="panel-heading"><div><p class="eyebrow">Your material</p><h3>Word list</h3></div><span>${items.length}${!isPro() && route !== 'demo' ? ' / 50 free' : ''}</span></div>
+  return `<section class="desk-panel library"><div class="panel-heading"><div><p class="eyebrow">Your word list</p><h3>Word list</h3></div><span>${items.length}${!isPro() && route !== 'demo' ? ' / 50 free' : ''}</span></div>
     ${sorted.length ? `<ul class="word-list">${sorted.map((item) => `<li data-item-id="${item.id}"><div class="word-row"><div><strong dir="auto">${escapeHtml(item.word)}</strong><p dir="auto">${escapeHtml(item.sentence)}</p><small>${dueLabel(item.dueAt)}</small></div><details><summary aria-label="Edit ${escapeHtml(item.word)}">Edit</summary><form class="edit-form"><label>Word<input name="word" value="${escapeHtml(item.word)}" dir="auto" required /></label><label>Sentence<textarea name="sentence" dir="auto" required>${escapeHtml(item.sentence)}</textarea></label><label>Meaning or hint<input name="note" value="${escapeHtml(item.note)}" dir="auto" /></label><p class="form-error" role="alert"></p><div><button class="button small primary" type="submit">Save changes</button><button class="text-button danger" type="button" data-action="delete-item">Delete word</button></div></form></details></div></li>`).join('')}</ul>` : `<p class="muted">Saved words will appear here.</p>`}
   </section>`;
 }
@@ -203,20 +206,20 @@ function confusionPanel(pairs: ReturnType<typeof confusionPairs>): string {
 }
 
 function dataPanel(): string {
-  return `<section class="data-panel"><div><p class="eyebrow">Keep your copy</p><h3>Move or back up your vocabulary</h3><p>Export includes your sentences, schedule, and answer history.</p></div><div class="data-actions"><button class="button secondary dark" data-action="export">Export JSON</button><label class="button secondary dark file-label">Import JSON<input id="import-file" type="file" accept="application/json,.json" /></label></div></section>`;
+  return `<section class="data-panel"><div><p class="eyebrow">Keep your word list</p><h3>Back up or restore your word list</h3><p>Backups include your sentences, schedule, and answer history.</p><p class="field-help">Backup files use JSON format.</p></div><div class="data-actions"><button class="button secondary dark" data-action="export">Download backup</button><label class="button secondary dark file-label">Restore backup<input id="import-file" type="file" accept="application/json,.json" /></label></div></section>`;
 }
 
 function paidSection(): string {
   const state = cachedLicense();
-  return `<section class="paid-section" id="paid"><div><p class="eyebrow">Optional one-time license</p><h2>Keep a larger word archive</h2><p>Pay $12 once for unlimited words and the full confusion-pair history. Practice, 50 words, and exports remain free.</p></div><div class="license-card">${isPro() ? `<p class="license-active"><span aria-hidden="true">✓</span> Personal license active</p><button class="text-button" data-action="remove-license">Remove this license</button>` : `<a class="button primary" href="${checkoutUrl}">Buy for $12 once</a><details><summary>Have a license?</summary><form id="license-form"><label for="license-token">Paste your license</label><input id="license-token" name="license" value="${escapeHtml(state?.token || '')}" autocomplete="off" required /><button class="button secondary dark" type="submit" aria-label="Verify license">Verify license</button></form></details>${state?.token && !state.valid ? `<p class="license-warning">This license is not active. Check it or buy a new one.</p>` : ''}<p class="merchant">Checkout and refunds are handled by Sociobot/Dodo.</p>`}</div></section>`;
+  return `<section class="paid-section" id="paid"><div><p class="eyebrow">Optional one-time license</p><h2>Remove the 50-word limit</h2><p>Pay $12 once for unlimited words and the full confusion-pair history. The free list holds 50 words.</p></div><div class="license-card">${isPro() ? `<p class="license-active"><span aria-hidden="true">✓</span> Personal license active</p><button class="text-button" data-action="remove-license">Remove this license</button>` : `<a class="button primary" href="${checkoutUrl}">Buy for $12 once — opens secure checkout</a><details><summary>Have a license?</summary><form id="license-form"><label for="license-token">Paste your license</label><input id="license-token" name="license" value="${escapeHtml(state?.token || '')}" autocomplete="off" required /><button class="button secondary dark" type="submit" aria-label="Verify license">Verify license</button></form></details>${state?.token && !state.valid ? `<p class="license-warning">This license is not active. Check it or buy a new one.</p>` : ''}<p class="merchant">Sociobot/Dodo is the merchant of record. See terms for refunds.</p>`}</div></section>`;
 }
 
 function privacyPage(): string {
-  return `<main id="main" class="legal-page" tabindex="-1"><p class="eyebrow">Last updated 28 August 2026</p><h1 tabindex="-1">Your vocabulary stays in your browser</h1><p class="lede">Context Cloze stores words, sentences, schedules, and answers in IndexedDB on this device.</p><h2>What stays local</h2><p>Your practice data does not leave this browser. Demo data uses a separate database and never reads your real vocabulary.</p><h2>Exports and deletion</h2><p>Exports are files you ask the browser to create. Delete browser site data to remove all local records.</p><h2>License checks</h2><p>If you paste or buy a license, the token is stored locally. The app sends it only to the Sociobot billing API for verification.</p><h2>Analytics</h2><p>This app includes no advertising, behavioural analytics, or third-party scripts.</p><h2>Contact</h2><p>Email <a href="mailto:privacy@sociobot.in">privacy@sociobot.in</a> with a privacy question.</p></main>`;
+  return `<main id="main" class="legal-page" tabindex="-1"><p class="eyebrow">Last updated 28 August 2026</p><h1 tabindex="-1">Your word list stays in your browser</h1><p class="lede">Context Cloze keeps words, sentences, due dates, and answers on this device.</p><h2>What stays local</h2><p>Your practice data does not leave this browser. Sample data uses separate browser storage and never reads your real word list.</p><h2>Backups and deletion</h2><p>Backups are files you ask the browser to create. Use your browser’s site-data controls to remove stored app data.</p><h2>License checks</h2><p>If you paste or buy a license, its token stays in browser storage. The app sends it only to Sociobot to check the license.</p><h2>Analytics</h2><p>This app includes no advertising, behavioural analytics, third-party fonts, or third-party scripts.</p><h2>Contact</h2><p>Email <a href="mailto:privacy@sociobot.in">privacy@sociobot.in</a> with a privacy question.</p></main>`;
 }
 
 function termsPage(): string {
-  return `<main id="main" class="legal-page" tabindex="-1"><p class="eyebrow">Last updated 28 August 2026</p><h1 tabindex="-1">Use Context Cloze for your own material</h1><p class="lede">These terms cover the local app and its one-time personal license.</p><h2>Your sentences</h2><p>Only add text you have the right to store. You remain responsible for your vocabulary and example sentences.</p><h2>The service</h2><p>The app is provided as available. Keep JSON exports if losing browser storage would cause harm.</p><h2>One-time license</h2><p>A $12 purchase unlocks unlimited words and full confusion history for one person. Sociobot/Dodo is the merchant of record and handles refunds. A refunded or disputed purchase may revoke its license.</p><h2>Acceptable use</h2><p>Do not interfere with the site, billing API, or other users. The app is not a language course or professional translation service.</p><h2>Contact</h2><p>Email <a href="mailto:support@sociobot.in">support@sociobot.in</a> with a terms question.</p></main>`;
+  return `<main id="main" class="legal-page" tabindex="-1"><p class="eyebrow">Last updated 28 August 2026</p><h1 tabindex="-1">Use Context Cloze for your own sentences</h1><p class="lede">These terms cover the local app and its one-time personal license.</p><h2>Your sentences</h2><p>Only add text you have the right to store. You remain responsible for your word list and example sentences.</p><h2>The service</h2><p>The app is provided as available. Keep backups if losing browser storage would cause harm.</p><h2>One-time license</h2><p>A $12 purchase unlocks unlimited words and full confusion history for one person. Sociobot/Dodo is the merchant of record and handles refunds. A refunded or disputed purchase may revoke its license.</p><h2>Acceptable use</h2><p>Do not interfere with the site, billing API, or other users. The app is not a language course or professional translation service.</p><h2>Contact</h2><p>Email <a href="mailto:support@sociobot.in">support@sociobot.in</a> with a terms question.</p></main>`;
 }
 
 function offlinePage(): string {
@@ -247,17 +250,24 @@ async function loadData(): Promise<void> {
   try {
     if (route === 'demo') await store.seedDemo();
     [items, reviews] = await Promise.all([store.getItems(), store.getReviews()]);
+    if (route === 'demo' && practice.length === 0) {
+      practice = items.filter((item) => item.dueAt <= Date.now()).sort((a, b) => a.dueAt - b.dueAt).slice(0, 1);
+      practiceIndex = 0;
+    }
   } catch {
-    notice = 'Your vocabulary could not open. Check browser storage, then reload.';
+    notice = 'Your word list could not open. Check browser storage, then reload.';
     noticeKind = 'error';
   }
   isLoading = false;
   render();
 }
 
-async function navigate(path: string, push = true): Promise<void> {
+async function navigate(path: string, push = true, restoredScroll?: number): Promise<void> {
   const url = new URL(path, location.origin);
-  if (push) history.pushState({}, '', `${url.pathname}${url.search}${url.hash}`);
+  if (push) {
+    history.replaceState({ ...(history.state || {}), scrollY: window.scrollY }, '', location.href);
+    history.pushState({ scrollY: 0 }, '', `${url.pathname}${url.search}${url.hash}`);
+  }
   const next = routeFor(url.pathname);
   const modeChanged = (next === 'demo') !== (route === 'demo');
   route = next;
@@ -265,12 +275,13 @@ async function navigate(path: string, push = true): Promise<void> {
   feedback = null;
   if (modeChanged) store = new VocabularyStore(route === 'demo');
   if (route === 'home' || route === 'demo') await loadData(); else render();
-  window.scrollTo({ top: 0, behavior: 'auto' });
   requestAnimationFrame(() => {
+    if (typeof restoredScroll === 'number') window.scrollTo({ top: restoredScroll, behavior: 'auto' });
+    else if (url.hash) document.querySelector(url.hash)?.scrollIntoView();
+    else window.scrollTo({ top: 0, behavior: 'auto' });
     document.querySelector<HTMLElement>('main h1')?.focus();
     const announcer = document.querySelector('#route-announcer');
     if (announcer) announcer.textContent = document.title;
-    if (url.hash) document.querySelector(url.hash)?.scrollIntoView();
   });
 }
 
@@ -299,7 +310,6 @@ function bindEvents(): void {
   document.querySelector('#import-file')?.addEventListener('change', onImport);
   document.querySelector('#license-form')?.addEventListener('submit', onLicense);
   document.querySelectorAll<HTMLElement>('[data-action]').forEach((target) => target.addEventListener('click', onAction));
-  if (practice.length && !feedback) requestAnimationFrame(() => document.querySelector<HTMLInputElement>('#answer')?.focus());
 }
 
 async function onAdd(event: Event): Promise<void> {
@@ -436,7 +446,9 @@ async function refresh(message: string, kind: 'info' | 'error' | 'success' = 'in
   showNotice(message, kind);
 }
 
-window.addEventListener('popstate', () => void navigate(location.pathname + location.search + location.hash, false));
+history.scrollRestoration = 'manual';
+history.replaceState({ ...(history.state || {}), scrollY: window.scrollY }, '', location.href);
+window.addEventListener('popstate', (event) => void navigate(location.pathname + location.search + location.hash, false, typeof event.state?.scrollY === 'number' ? event.state.scrollY : 0));
 window.addEventListener('online', () => showNotice('Connection restored.', 'success'));
 window.addEventListener('offline', () => showNotice('You are offline. Saved practice still works.'));
 

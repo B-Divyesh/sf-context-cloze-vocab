@@ -130,6 +130,7 @@ input:focus, textarea:focus { border-color: var(--amber-dark); outline: 3px soli
 .edit-form > div { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
 .text-button { min-height: 44px; padding: 8px 2px; color: var(--amber-light); border: 0; border-bottom: 1px solid currentColor; background: transparent; font-weight: 750; cursor: pointer; }
 .text-button.danger { color: #8d2d20; }
+.review-sheet .session-switch { color: var(--amber-dark); }
 .confusions { display: grid; grid-template-columns: 1fr 2fr; gap: 32px; margin: 48px 0; padding: 32px; color: var(--paper); background: var(--deep); }
 .confusions .eyebrow { color: var(--amber-light); }
 .confusions p { color: var(--paper-2); }
@@ -141,6 +142,7 @@ input:focus, textarea:focus { border-color: var(--amber-dark); outline: 3px soli
 .data-panel { margin: 48px 0 0; }
 .file-label { position: relative; cursor: pointer; }
 .file-label input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.file-label:focus-within { outline: 3px solid var(--amber-light); outline-offset: 4px; }
 
 .editorial-section { padding: 112px max(24px, calc((100vw - 1050px) / 2)); color: var(--ink); background: #d8c9ad; }
 .editorial-section h2 { max-width: 12ch; }
@@ -170,7 +172,7 @@ input:focus, textarea:focus { border-color: var(--amber-dark); outline: 3px soli
 .state-page { display: flex; flex-direction: column; align-items: start; justify-content: center; width: min(900px, 100% - 48px); min-height: 70vh; margin: 0 auto; padding: 80px 0; }
 .state-page h1 { max-width: 14ch; }
 .state-page > p:not(.eyebrow) { max-width: 55ch; color: var(--paper-2); font-size: 1.15rem; }
-.horizon-mark { margin-bottom: 32px; color: var(--amber); font-family: var(--display); font-size: clamp(3rem, 10vw, 8rem); letter-spacing: .08em; opacity: .4; }
+.horizon-mark { margin-bottom: 32px; color: var(--amber); font-family: var(--display); font-size: clamp(3rem, 10vw, 8rem); letter-spacing: .08em; opacity: .68; }
 .site-footer { display: grid; grid-template-columns: 1fr auto; gap: 16px 32px; width: min(1400px, 100% - 48px); margin: 0 auto; padding: 48px 0 calc(48px + env(safe-area-inset-bottom)); color: var(--paper-2); border-top: 1px solid var(--line); font-size: .88rem; }
 .site-footer p { margin: 0; }
 .site-footer .build { grid-column: 1 / -1; color: var(--mist); font-size: .75rem; }
@@ -206,6 +208,8 @@ input:focus, textarea:focus { border-color: var(--amber-dark); outline: 3px soli
   .hero-art::before { inset: -8px 12px 18px -8px; }
   .hero-art figcaption { position: relative; bottom: auto; width: calc(100% - 20px); margin: -12px 0 0 20px; }
   .workspace { padding: 72px 16px; }
+  .demo-main .workspace { padding-top: 24px; }
+  .demo-main .review-sheet { margin-top: 0; }
   .workspace-head, .due-strip, .data-panel { align-items: stretch; flex-direction: column; }
   .stats { display: grid; grid-template-columns: repeat(3, 1fr); }
   .stats span { min-width: 0; padding: 10px; }

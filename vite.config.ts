@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { defineConfig, type Plugin } from 'vite';
 
@@ -68,6 +68,24 @@ self.addEventListener('fetch', (event) => {
       if (css) {
         const pagePath = resolve(outputDirectory, '404.html');
         writeFileSync(pagePath, readFileSync(pagePath, 'utf8').replace('/assets/app.css', css));
+      }
+
+      const home = readFileSync(resolve(outputDirectory, 'index.html'), 'utf8');
+      const routes = [
+        ['demo', 'Demo — Context Cloze', 'Practise eight sample words in a separate sample workspace.', 'Try a sample missing-word practice session.'],
+        ['privacy', 'Privacy — Context Cloze', 'How Context Cloze stores your word list and checks a license.', 'See how Context Cloze handles your word list.'],
+        ['terms', 'Terms — Context Cloze', 'Terms for Context Cloze and its one-time personal license.', 'Read the terms for Context Cloze.'],
+        ['offline', 'Offline — Context Cloze', 'Continue practising saved words without a connection.', 'Context Cloze keeps saved practice available offline.']
+      ];
+      for (const [route, title, description, social] of routes) {
+        const routeUrl = `https://context-cloze-vocab.sociobot.in/${route}`;
+        const page = home
+          .replaceAll('Context Cloze — practise words in sentences', title)
+          .replaceAll('Paste your own words and sentences, then practise retrieving each word in context. Your word list stays on your device.', description)
+          .replaceAll('https://context-cloze-vocab.sociobot.in/', routeUrl)
+          .replaceAll('Type the missing word in sentences you chose.', social);
+        mkdirSync(resolve(outputDirectory, route), { recursive: true });
+        writeFileSync(resolve(outputDirectory, route, 'index.html'), page);
       }
     }
   };

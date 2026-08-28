@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 async function readExport(page: import('@playwright/test').Page): Promise<Record<string, unknown>> {
   const downloadPromise = page.waitForEvent('download');
-  await page.getByRole('button', { name: 'Export JSON' }).click();
+  await page.getByRole('button', { name: 'Download backup' }).click();
   const stream = await (await downloadPromise).createReadStream();
   const chunks: Buffer[] = [];
   for await (const chunk of stream!) chunks.push(Buffer.from(chunk));
@@ -27,6 +27,12 @@ async function clearDemoStore(page: import('@playwright/test').Page): Promise<vo
   });
 }
 
+test('@claim:demo-sample-count demo opens eight sample words', async ({ page }) => {
+  await page.goto('/demo');
+  await expect(page.getByRole('heading', { name: 'Type the missing word' })).toBeVisible();
+  await expect(page.getByText('8 words', { exact: true })).toBeVisible();
+});
+
 test('@claim:demo-isolation demo opens with sample data and never enters real storage', async ({ page }) => {
   await page.goto('/demo');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Practise sample words in context');
@@ -40,11 +46,22 @@ test('@claim:demo-isolation demo opens with sample data and never enters real st
   await expect(page.getByText('0 words', { exact: true })).toBeVisible();
 });
 
+test('@claim:typed-cloze each saved word becomes a blank answered by typing', async ({ page }) => {
+  await page.goto('/');
+  await page.getByLabel('Word', { exact: true }).fill('scarce');
+  await page.getByLabel('Sentence containing that word').fill('Clean water becomes scarce in summer.');
+  await page.getByRole('button', { name: 'Save word' }).click();
+  await page.getByRole('button', { name: 'Practise due words' }).click();
+  await expect(page.locator('.review-sheet blockquote')).toContainText('_____');
+  await page.getByLabel('Your answer').fill('scarce');
+  await page.getByRole('button', { name: 'Check answer' }).click();
+  await expect(page.getByText('Correct.', { exact: true })).toBeVisible();
+});
+
 test('@claim:typed-scheduling a typed answer updates the due queue', async ({ page }) => {
   await page.goto('/demo');
   const before = await readExport(page) as { items: Array<{ word: string; dueAt: number; intervalDays: number; reviewCount: number }> };
   const beforeElusive = before.items.find((item) => item.word === 'elusive')!;
-  await page.getByRole('button', { name: 'Practise due words' }).click();
   await expect(page.getByRole('heading', { name: 'Type the missing word' })).toBeVisible();
   await page.getByLabel('Your answer').fill('ELUSIVE');
   await page.getByRole('button', { name: 'Check answer' }).click();
@@ -59,7 +76,6 @@ test('@claim:typed-scheduling a typed answer updates the due queue', async ({ pa
 
 test('@claim:case-insensitive-marking capitalisation does not affect marking', async ({ page }) => {
   await page.goto('/demo');
-  await page.getByRole('button', { name: 'Practise due words' }).click();
   await page.getByLabel('Your answer').fill('ELUSIVE');
   await page.getByRole('button', { name: 'Check answer' }).click();
   await expect(page.getByText('Correct.', { exact: true })).toBeVisible();
@@ -67,7 +83,7 @@ test('@claim:case-insensitive-marking capitalisation does not affect marking', a
 
 test('@claim:full-session a full session includes every saved word', async ({ page }) => {
   await page.goto('/demo');
-  await page.getByRole('button', { name: 'Practise all words' }).click();
+  await page.getByRole('button', { name: 'Practise all eight sample words' }).click();
   await expect(page.getByText('Sentence 1 of 8', { exact: true })).toBeVisible();
   for (let index = 0; index < 8; index += 1) {
     await page.getByLabel('Your answer').fill('not the answer');
@@ -90,7 +106,28 @@ test('@claim:unicode-rtl Unicode and right-to-left words can be saved and answer
   await expect(page.getByText('Correct.', { exact: true })).toBeVisible();
 });
 
-test('@claim:json-export round-trips every word schedule and answer history through a fresh demo store', async ({ page }) => {
+test('@claim:unicode-normalisation accented answers accept composed and decomposed characters', async ({ page }) => {
+  await page.goto('/');
+  await page.getByLabel('Word', { exact: true }).fill('Café');
+  await page.getByLabel('Sentence containing that word').fill('We stopped at the Café after class.');
+  await page.getByRole('button', { name: 'Save word' }).click();
+  await page.getByRole('button', { name: 'Practise due words' }).click();
+  await page.getByLabel('Your answer').fill('cafe\u0301');
+  await page.getByRole('button', { name: 'Check answer' }).click();
+  await expect(page.getByText('Correct.', { exact: true })).toBeVisible();
+});
+
+test('@claim:due-queue due words return as questions', async ({ page }) => {
+  await page.goto('/');
+  await page.getByLabel('Word', { exact: true }).fill('clear');
+  await page.getByLabel('Sentence containing that word').fill('The instructions are clear to everyone.');
+  await page.getByRole('button', { name: 'Save word' }).click();
+  await page.getByRole('button', { name: 'Practise due words' }).click();
+  await expect(page.getByRole('heading', { name: 'Type the missing word' })).toBeVisible();
+  await expect(page.locator('.review-sheet blockquote')).toContainText('_____');
+});
+
+test('@claim:backup-roundtrip round-trips every word schedule and answer history through a fresh demo store', async ({ page }) => {
   await page.goto('/demo');
   const data = await readExport(page) as { product: string; items: unknown[]; reviews: unknown[] };
   expect(data.product).toBe('context-cloze-vocab');
@@ -126,10 +163,19 @@ test('@claim:local-storage demo flow makes no cross-origin requests', async ({ p
     if (url.origin !== 'http://127.0.0.1:4173') crossOrigin.push(url.href);
   });
   await page.goto('/demo');
-  await page.getByRole('button', { name: 'Practise due words' }).click();
   await page.getByLabel('Your answer').fill('elusive');
   await page.getByRole('button', { name: 'Check answer' }).click();
   expect(crossOrigin).toEqual([]);
+});
+
+test('@claim:no-tracking-resources loads no third-party resources across public routes', async ({ page }) => {
+  const external: string[] = [];
+  page.on('request', (request) => {
+    const url = new URL(request.url());
+    if (url.origin !== 'http://127.0.0.1:4173') external.push(url.href);
+  });
+  for (const path of ['/', '/demo', '/privacy', '/terms']) await page.goto(path);
+  expect(external).toEqual([]);
 });
 
 test('@claim:offline-reload demo reloads offline after the first visit', async ({ page, context }) => {
@@ -146,12 +192,43 @@ test('@claim:offline-reload demo reloads offline after the first visit', async (
 test('@claim:free-limit landing states and enforces the 50-word free tier', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByText('Free for 50 words')).toBeVisible();
-  await expect(page.getByText('Pay $12 once for unlimited words and the full confusion-pair history. Practice, 50 words, and exports remain free.')).toBeVisible();
+  await expect(page.getByText('Pay $12 once for unlimited words and the full confusion-pair history. The free list holds 50 words.')).toBeVisible();
   const lines = Array.from({ length: 51 }, (_, index) => `word${index} | This sentence contains word${index}.`).join('\n');
   await page.getByText('Paste several words').click();
   await page.getByLabel('One per line: word | sentence').fill(lines);
   await page.getByRole('button', { name: 'Save pasted words' }).click();
   await expect(page.getByText('Only 50 free word spaces remain. Paste fewer lines or add a license.')).toBeVisible();
+});
+
+test('@claim:checkout-link shows a visible Sociobot checkout destination', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByRole('link', { name: /Buy for \$12 once — opens secure checkout/ })).toHaveAttribute('href', 'https://api.sociobot.in/api/v1/products/context-cloze-vocab/checkout');
+});
+
+test('@claim:license-token-privacy stores a returned token and sends it only to Sociobot', async ({ page }) => {
+  const tokenRequests: string[] = [];
+  await page.route('https://api.sociobot.in/**', (route) => {
+    tokenRequests.push(route.request().url());
+    return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ valid: true, reason: 'ok' }) });
+  });
+  await page.goto('/?license=private_token');
+  await expect(page.getByText('Personal license active')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => localStorage.getItem('sb_license:context-cloze-vocab'))).toBe('private_token');
+  expect(tokenRequests).toEqual(['https://api.sociobot.in/api/v1/products/context-cloze-vocab/verify?license=private_token']);
+});
+
+test('@claim:clear-site-data clearing browser storage removes real demo and license data', async ({ page }) => {
+  await page.goto('/');
+  await page.getByLabel('Word', { exact: true }).fill('keepsake');
+  await page.getByLabel('Sentence containing that word').fill('This keepsake belongs on the desk.');
+  await page.getByRole('button', { name: 'Save word' }).click();
+  await page.goto('/demo');
+  await page.evaluate(() => localStorage.setItem('sb_license:context-cloze-vocab', 'erase-me'));
+  const session = await page.context().newCDPSession(page);
+  await session.send('Storage.clearDataForOrigin', { origin: 'http://127.0.0.1:4173', storageTypes: 'indexeddb,local_storage' });
+  await page.reload();
+  await expect.poll(() => page.evaluate(async () => (await indexedDB.databases()).map((database) => database.name).filter((name) => name?.startsWith('context-cloze-')))).toEqual(['context-cloze-demo']);
+  await expect.poll(() => page.evaluate(() => localStorage.getItem('sb_license:context-cloze-vocab'))).toBeNull();
 });
 
 test('@claim:paid-license a returned license stores beyond 50 words and shows every confusion pair', async ({ page }) => {
