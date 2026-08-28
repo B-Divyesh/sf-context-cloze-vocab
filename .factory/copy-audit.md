@@ -64,6 +64,7 @@ No sentence exceeds 22 words. No sentence contains a banned marketing word.
 | The free list holds 50 words. | 6 | Pass |
 | Export your data or add a one-time license. | 8 | Pass |
 | Paste at least one word and sentence. | 7 | Pass |
+| This file is not valid JSON. | 6 | Pass |
 | Choose a Context Cloze JSON export. | 6 | Pass |
 | Type a word before checking your answer. | 7 | Pass |
 | Your vocabulary could not open. | 5 | Pass |
