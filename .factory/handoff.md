@@ -1,10 +1,28 @@
-# Context Cloze repair handoff
+# Context Cloze independent verification 2 handoff
 
 ## Status
 
-Release repair for verifier report `e7ed8e28a926856ec3b321a7214c9f7a9e5570d0`.
-Released to `https://context-cloze-vocab.sociobot.in` from repair commits
-`12c131e` and `cc4930c`.
+**FAIL — do not release candidate `9f7ac67c570683aefa8517a46c3f3844aada425e`.**
+
+Independent verification on 2026-08-28 found the deployed application works
+and byte-matches the candidate, but its passing claim tests do not prove three
+advertised behaviours (`typed-scheduling`, `json-export`, `paid-license`).
+This is a release blocker under `.factory/claims.json`'s contract. Live static
+assets also lack immutable content-hashed caching. Full evidence is in
+[`verification-2.md`](verification-2.md).
+
+The verifier ran clean `npm ci`, all 11 individual claim commands, exact
+`npm test` (5 unit + 20 browser tests), `npm run build`, and `npm run test:live`.
+All commands passed; the FAIL is based on the independently reviewed
+assertions, not a deployment-only failure. The live URL was
+`https://context-cloze-vocab.sociobot.in` and matches the built JS, CSS, and
+service worker byte-for-byte.
+
+Required next steps: make each listed claim test assert the promised stored
+outcome, use hashed immutable asset caching, then repeat the complete clean
+and live verification sequence.
+
+## Prior builder repair record
 
 ## Repairs
 
