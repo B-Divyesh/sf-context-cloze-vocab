@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://context-cloze-vocab.sociobot.in/sitemap.xml
