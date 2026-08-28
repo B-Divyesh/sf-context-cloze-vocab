@@ -43,3 +43,13 @@ changing the night-archive visual system or the offline PWA deployment class.
   `.factory/evidence/polish-2-live-demo-390.png`.
 - Exact test counts, bundle sizes, Lighthouse results, hashes, and live checks
   are recorded in `.factory/handoff.md`.
+
+## Final result
+
+The repaired product commit `b1d35773e977d0c7bb4143650eaad9d6df3e8603`
+was deployed at <https://context-cloze-vocab.sociobot.in>. A final clean clone
+passed all 19 exact claim commands, 6 unit/config tests, 32 browser tests, and
+the production build. The live route/Axe/offline/privacy pass found no
+remaining finding. Live Lighthouse scores are 100/100/100/100; the deployed
+JavaScript matches local SHA-256
+`a1bcb070bdb09e23a8b878902a582edafa5fc3b7f500ea7b640e99615c92d6c5`.
