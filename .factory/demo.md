@@ -5,8 +5,9 @@
   past incorrect answers that form four confusion pairs.
 - Storage: sample and real word lists use separate browser databases. Demo mode
   never opens the real word list.
-- Reset: choose **Reset demo** in the persistent demo banner.
-- Exit: choose **Start for real**. This clears the demo stores before opening the
-  real workspace.
-- Offline: visit the demo once, wait for the service worker, then disconnect and
-  reload `/demo`.
+- Reset: choose **Reset demo** in the persistent demo banner. It restores the
+  eight samples and opens the first missing-word question again.
+- Exit: choose **Start for real**. Any route that leaves the demo clears its
+  temporary words and answers before opening the next page.
+- Offline: visit `/?demo=1` once, wait for the service worker, then disconnect
+  and reload the same URL.

@@ -1,7 +1,7 @@
 {
   "name": "Context Cloze",
   "short_name": "Cloze",
-  "description": "Practise your own words by typing them into sentences.",
+  "description": "Practise your own words by typing each missing word in context.",
   "start_url": "/?source=installed&v=1",
   "scope": "/",
   "display": "standalone",

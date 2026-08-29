@@ -22,7 +22,7 @@ function offlineWorker(): Plugin {
         .map((file) => `/assets/${file}`)
         .sort();
       const version = `context-cloze-${precache.join('|').replaceAll(/[^a-z0-9]/giu, '').slice(-24)}`;
-      const shell = ['/', '/demo', '/privacy', '/terms', '/offline', ...precache];
+      const shell = ['/', '/?demo=1', '/demo', '/privacy', '/terms', '/offline', ...precache];
       const source = `const VERSION = ${JSON.stringify(version)};
 const STATIC = \`${'${VERSION}'}-static\`;
 const PAGES = \`${'${VERSION}'}-pages\`;

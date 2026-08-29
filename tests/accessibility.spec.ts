@@ -13,10 +13,30 @@ for (const path of ['/', '/demo', '/privacy', '/terms', '/offline', '/404.html']
 
 test('mobile layout keeps controls within a 390px viewport', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/demo');
+  await page.goto('/?demo=1');
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(1);
-  await expect(page.getByRole('button', { name: 'Check answer' })).toBeVisible();
+  for (const target of [
+    page.getByRole('heading', { name: 'Type the missing word' }),
+    page.locator('.review-sheet blockquote'),
+    page.getByLabel('Your answer'),
+    page.getByRole('button', { name: 'Check answer' })
+  ]) {
+    await expect(target).toBeVisible();
+    const box = await target.boundingBox();
+    expect(box).not.toBeNull();
+    expect(box!.y + box!.height).toBeLessThanOrEqual(844);
+  }
+});
+
+test('mobile landing keeps its sample action in the first view', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  const action = page.getByRole('link', { name: 'Try it with sample data' });
+  await expect(action).toBeVisible();
+  const box = await action.boundingBox();
+  expect(box).not.toBeNull();
+  expect(box!.y + box!.height).toBeLessThanOrEqual(844);
 });
 
 test('mobile demo banner and compact wordmark keep 44px touch targets', async ({ page }) => {
@@ -74,6 +94,7 @@ test('back navigation restores the prior scroll position', async ({ page }) => {
 
 test('every app route updates its share metadata', async ({ page }) => {
   const expected = new Map([
+    ['/', 'Context Cloze — practise words in sentences'],
     ['/demo', 'Demo — Context Cloze'],
     ['/privacy', 'Privacy — Context Cloze'],
     ['/terms', 'Terms — Context Cloze'],
@@ -86,4 +107,19 @@ test('every app route updates its share metadata', async ({ page }) => {
     await expect(page.locator('meta[name="twitter:title"]')).toHaveAttribute('content', title);
     await expect(page.locator('meta[property="og:url"]')).toHaveAttribute('content', `https://context-cloze-vocab.sociobot.in${path}`);
   }
+});
+
+test('SPA navigation focuses each page heading and keeps legal links available', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('link', { name: 'Privacy', exact: true }).first().click();
+  await expect(page).toHaveURL('/privacy');
+  await expect(page.getByRole('heading', { level: 1 })).toBeFocused();
+  await expect(page.getByRole('link', { name: 'Privacy', exact: true }).last()).toHaveAttribute('href', '/privacy');
+  await expect(page.getByRole('link', { name: 'Terms', exact: true })).toHaveAttribute('href', '/terms');
+});
+
+test('paid panel links to license terms and a plain support address', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByRole('link', { name: 'license terms' })).toHaveAttribute('href', '/terms');
+  await expect(page.getByRole('link', { name: 'support@sociobot.in' })).toHaveAttribute('href', 'mailto:support@sociobot.in');
 });

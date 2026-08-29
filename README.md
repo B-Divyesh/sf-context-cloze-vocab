@@ -19,7 +19,7 @@ One-click sample: <https://context-cloze-vocab.sociobot.in/?demo=1>
 - Counts repeated wrong guesses beside the intended word.
 - Downloads and restores backups with word, schedule, and answer history.
 - Works offline after the first visit.
-- Keeps the sample word list separate from your real word list.
+- Keeps the sample word list separate and never reads or changes your real word list.
 
 The free list holds 50 words. A $12 one-time personal license removes that
 limit and shows the full confusion history. The purchase link opens Sociobot’s
@@ -66,7 +66,7 @@ full policy.
 ## Developer notes
 
 Real and sample word lists use separate IndexedDB databases. Backups use JSON
-format. The generated environmental artwork is original to this product.
+format.
 
 - Product brief: [`.factory/brief.json`](.factory/brief.json)
 - Visual system and asset provenance: [`.factory/design.md`](.factory/design.md)

@@ -82,6 +82,7 @@ button { color: inherit; }
 .hero-art figcaption { position: absolute; right: 0; bottom: -38px; width: min(80%, 420px); padding: 14px 18px; color: var(--ink); background: var(--paper); font-family: var(--display); font-style: italic; box-shadow: 0 15px 38px rgba(0,0,0,.25); }
 
 .workspace { padding: 96px max(24px, calc((100vw - 1200px) / 2)); color: var(--ink); background: var(--paper); }
+.workspace :focus-visible, .editorial-section :focus-visible, .paid-section :focus-visible { outline-color: var(--amber-dark); }
 .workspace-head { display: flex; align-items: end; justify-content: space-between; gap: 32px; margin-bottom: 40px; }
 .workspace .eyebrow, .editorial-section .eyebrow, .paid-section .eyebrow { color: var(--amber-dark); }
 .workspace-head h2 { margin: 0; }
@@ -142,7 +143,7 @@ input:focus, textarea:focus { border-color: var(--amber-dark); outline: 3px soli
 .data-panel { margin: 48px 0 0; }
 .file-label { position: relative; cursor: pointer; }
 .file-label input { position: absolute; width: 1px; height: 1px; opacity: 0; }
-.file-label:focus-within { outline: 3px solid var(--amber-light); outline-offset: 4px; }
+.file-label:focus-within { outline: 3px solid var(--amber-dark); outline-offset: 4px; }
 
 .editorial-section { padding: 112px max(24px, calc((100vw - 1050px) / 2)); color: var(--ink); background: #d8c9ad; }
 .editorial-section h2 { max-width: 12ch; }
@@ -159,6 +160,8 @@ input:focus, textarea:focus { border-color: var(--amber-dark); outline: 3px soli
 .license-card details { margin-top: 20px; }
 .license-card form { margin-top: 8px; }
 .merchant, .license-warning { margin: 16px 0 0; color: var(--muted-ink); font-size: .82rem; }
+.merchant a { color: var(--amber-dark); }
+.merchant a:hover { color: var(--ink); }
 .license-active { font-weight: 800; }
 .license-active span { display: inline-grid; place-items: center; width: 30px; height: 30px; margin-right: 8px; color: #fff; border-radius: 50%; background: #486d54; }
 

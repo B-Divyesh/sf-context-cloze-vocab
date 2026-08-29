@@ -8,10 +8,10 @@
   },
   {
     "id": "demo-isolation",
-    "claim": "Demo changes never enter the learner's real vocabulary.",
-    "where": "landing action, demo banner, README",
+    "claim": "The demo uses separate browser storage and never reads or changes the learner's real word list.",
+    "where": "landing action, demo banner, privacy page, README",
     "test": "npm test -- --grep @claim:demo-isolation",
-    "sandbox": "fresh browser context; add a demo word, leave demo, assert the real store is empty"
+    "sandbox": "fresh browser context; create a named real word, enter /?demo=1, prove it is absent from the demo DOM and database, add a named demo word, then prove both stores remain unchanged by the other mode"
   },
   {
     "id": "typed-cloze",
@@ -127,7 +127,7 @@
   },
   {
     "id": "paid-license",
-    "claim": "A valid one-time license unlocks unlimited words and full confusion history.",
+    "claim": "A valid one-time license removes the 50-word limit and shows full confusion history.",
     "where": "paid section, README",
     "test": "npm test -- --grep @claim:paid-license",
     "sandbox": "fresh landing page; intercept a valid billing fixture, import 51 words and four wrong-answer pairs, then assert all are visible"

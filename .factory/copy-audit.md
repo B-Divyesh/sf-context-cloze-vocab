@@ -1,34 +1,79 @@
 # Landing copy audit
 
-Audited 2026-08-28. Counts treat hyphenated terms and prices as one word. No
-visitor-facing sentence exceeds 22 words or contains a banned marketing word.
+Audited 2026-08-29 after polish round 3. Counts treat prices, email addresses,
+URLs, and hyphenated terms as one word. No public sentence
+exceeds 22 words or contains a banned marketing word. Every claim-like line
+below names its matching entry in `.factory/claims.json`.
 
 ## First screen
 
 | Copy | Words | Result |
 | --- | ---: | --- |
-| Recall words inside sentences | 4 | Pass |
-| For independent learners who recognise words but cannot retrieve them while writing or speaking. | 14 | Pass |
-| Opens eight sample words. | 4 | Tested: `demo-sample-count` |
-| Your word list stays untouched. | 6 | Tested: `demo-isolation` |
-| Stored on this device | 4 | Tested: `local-storage` |
-| Works offline after your first visit | 6 | Tested: `offline-reload` |
-| Free for 50 words | 4 | Tested: `free-limit` |
+| Your words · your sentences | 4 | Clear descriptor |
+| Recall words inside sentences | 4 | Clear job-first h1 |
+| For independent learners who recognise words but cannot retrieve them while writing or speaking. | 14 | Clear audience and situation |
+| Try it with sample data | 5 | Primary result-naming action |
+| Add your words | 3 | Real first-step action |
+| Opens eight sample words. | 4 | `demo-sample-count` |
+| Your word list stays untouched. | 5 | `demo-isolation` |
+| Stored on this device | 4 | `local-storage` |
+| Works offline after your first visit | 6 | `offline-reload` |
+| Free for 50 words | 4 | `free-limit` |
+| A blank notebook waits under a lamp beside a rainy night window. | 12 | Accurate image alternative |
+| Add a word and a sentence. | 6 | Direct instruction |
+| Context Cloze hides the word. | 5 | `typed-cloze` |
 
-## Key product copy
+The first screen states the job, audience, primary action, next result, and
+three tested facts. The primary sample action remains inside the first 390 ×
+844 viewport.
+
+## Product workspace and states
 
 | Copy | Words | Result |
 | --- | ---: | --- |
-| Each saved word becomes a blank. | 7 | Tested: `typed-cloze` |
-| Due words return as questions. | 5 | Tested: `due-queue` |
-| Capitalisation does not affect marking. | 5 | Tested: `case-insensitive-marking` |
-| Wrong guesses become confusion pairs. | 5 | Tested: `confusion-pairs` |
-| Review the words you confused. | 6 | Plain instruction |
-| Only add text you may store. | 6 | Plain instruction |
-| Your word list remains in this browser unless you download a backup. | 12 | Tested: `local-storage` |
-| Pay $12 once for unlimited words and the full confusion-pair history. | 11 | Tested: `free-limit`, `paid-license` |
-| The free list holds 50 words. | 6 | Tested: `free-limit` |
-| Buy for $12 once — opens secure checkout | 8 | Tested: `checkout-link` |
+| Opening your word list… | 4 | Loading state |
+| Your first blank will appear here | 6 | Empty-state heading |
+| Add a word and a sentence that uses it. | 9 | Empty-state instruction |
+| You can then start a typed review. | 7 | `typed-cloze` |
+| Saved words will appear here. | 5 | Empty-list state |
+| A tab works instead of the \| mark. | 8 | Bulk-entry help |
+| Backups include your sentences, schedule, and answer history. | 8 | `backup-roundtrip` |
+| Backup files use JSON format. | 5 | File-format note beside plain controls |
+| Type the missing word | 4 | Practice instruction |
+| A short session uses only the words due today. | 9 | Describes the current due queue |
+| You can practise every word or add another sentence. | 9 | Empty due-state next steps |
+| Wrong answers | 2 | Plain confusion-section label |
+| These pairs come from your incorrect answers. | 7 | `confusion-pairs` |
+| Wrong guesses will appear here beside the intended word. | 9 | Empty confusion state |
+| The free view shows three pairs. | 6 | `paid-license` |
+| The one-time license shows the full list. | 8 | `paid-license` |
+
+Actions consistently name their result: **Save word**, **Check answer**,
+**Practise due words**, **Practise all words**, **Download backup**, **Restore
+backup**, **Reset demo**, and **Start for real**.
+
+## Explanation, storage, and license
+
+| Copy | Words | Result |
+| --- | ---: | --- |
+| Practice steps | 2 | Plain section label |
+| How sentence practice works | 4 | Clear section heading |
+| Paste a word and a sentence you trust. | 8 | Direct instruction |
+| Each saved word becomes a blank. | 7 | `typed-cloze` |
+| Due words return as questions. | 5 | `due-queue` |
+| Capitalisation does not affect marking. | 5 | `case-insensitive-marking` |
+| Wrong guesses become confusion pairs. | 5 | `confusion-pairs` |
+| Review the words you confused. | 6 | Direct instruction |
+| Your content and storage | 4 | Plain section label |
+| You choose every sentence | 4 | Clear ownership heading |
+| Only add text you may store. | 6 | Scope instruction |
+| Your word list remains in this browser unless you download a backup. | 12 | `local-storage` |
+| Pay $12 once for unlimited words and the full confusion-pair history. | 11 | `free-limit`, `paid-license` |
+| The free list holds 50 words. | 6 | `free-limit` |
+| For license or refund questions, email support@sociobot.in. | 7 | Contact instruction, not a billing claim |
+| Read the license terms. | 4 | Legal-page link |
+| Type the missing word in sentences you chose. | 8 | Plain footer description |
+| Version 1.0.0 | 2 | Build identifier |
 
 ## Terminology
 
@@ -43,5 +88,5 @@ visitor-facing sentence exceeds 22 words or contains a banned marketing word.
 | Portable file | backup |
 | Paid entitlement | one-time license |
 
-Catalog description: “Practise your own words by typing them into sentence
-blanks.” It has ten words, begins with a verb, and is under 120 characters.
+Catalog description: “Practise your own words by typing each missing word in
+context.” It has 11 words, starts with a verb, and is 63 characters.

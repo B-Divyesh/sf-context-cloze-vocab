@@ -20,7 +20,7 @@ let notice = '';
 let noticeKind: 'info' | 'error' | 'success' = 'info';
 let isLoading = true;
 
-captureLicense();
+if (route !== 'demo') captureLicense();
 
 function routeFor(path: string, search = ''): AppRoute {
   if (path === '/' && new URLSearchParams(search).get('demo') === '1') return 'demo';
@@ -74,7 +74,7 @@ function footer(): string {
   return `<footer class="site-footer">
     <p>Type the missing word in sentences you chose.</p>
     <nav aria-label="Footer navigation"><a class="spa-link" href="/privacy">Privacy</a><a class="spa-link" href="/terms">Terms</a><a href="https://hello-factory.sociobot.in" rel="external">Built by Param Factory (external site)</a></nav>
-    <p class="build">Version 1.0.0 · Original generated scene</p>
+    <p class="build">Version 1.0.0</p>
   </footer>`;
 }
 
@@ -112,12 +112,12 @@ function homePage(): string {
           <source media="(max-width: 720px)" srcset="${heroMobile}" />
           <img src="${heroDesktop}" width="1200" height="800" fetchpriority="high" alt="A blank notebook waits under a lamp beside a rainy night window." />
         </picture>
-        <figcaption>Bring the sentence. Context Cloze supplies the blank.</figcaption>
+        <figcaption>Add a word and a sentence. Context Cloze hides the word.</figcaption>
       </figure>
     </section>
     ${workspace('Your practice desk')}
     <section id="how" class="editorial-section">
-      <p class="eyebrow">A small daily loop</p>
+      <p class="eyebrow">Practice steps</p>
       <h2>How sentence practice works</h2>
       <ol class="steps">
         <li><span>01</span><div><h3>Add words in context</h3><p>Paste a word and a sentence you trust. Each saved word becomes a blank.</p></div></li>
@@ -126,7 +126,7 @@ function homePage(): string {
       </ol>
     </section>
     <section class="limits-section">
-      <div><p class="eyebrow">A quiet tool, not a course</p><h2>You choose every sentence</h2></div>
+      <div><p class="eyebrow">Your content and storage</p><h2>You choose every sentence</h2></div>
       <div><p>Only add text you may store. Your word list remains in this browser unless you download a backup.</p></div>
     </section>
     ${paidSection()}
@@ -198,13 +198,13 @@ function addPanel(): string {
 
 function libraryPanel(): string {
   const sorted = [...items].sort((a, b) => a.word.localeCompare(b.word));
-  return `<section class="desk-panel library"><div class="panel-heading"><div><p class="eyebrow">Your word list</p><h3>Word list</h3></div><span>${items.length}${!isPro() && route !== 'demo' ? ' / 50 free' : ''}</span></div>
+  return `<section class="desk-panel library"><div class="panel-heading"><div><p class="eyebrow">Your word list</p><h3>Word list</h3></div><span>${items.length}${route !== 'demo' && !isPro() ? ' / 50 free' : ''}</span></div>
     ${sorted.length ? `<ul class="word-list">${sorted.map((item) => `<li data-item-id="${item.id}"><div class="word-row"><div><strong dir="auto">${escapeHtml(item.word)}</strong><p dir="auto">${escapeHtml(item.sentence)}</p><small>${dueLabel(item.dueAt)}</small></div><details><summary aria-label="Edit ${escapeHtml(item.word)}">Edit</summary><form class="edit-form"><label>Word<input name="word" value="${escapeHtml(item.word)}" dir="auto" required /></label><label>Sentence<textarea name="sentence" dir="auto" required>${escapeHtml(item.sentence)}</textarea></label><label>Meaning or hint<input name="note" value="${escapeHtml(item.note)}" dir="auto" /></label><p class="form-error" role="alert"></p><div><button class="button small primary" type="submit">Save changes</button><button class="text-button danger" type="button" data-action="delete-item">Delete word</button></div></form></details></div></li>`).join('')}</ul>` : `<p class="muted">Saved words will appear here.</p>`}
   </section>`;
 }
 
 function confusionPanel(pairs: ReturnType<typeof confusionPairs>): string {
-  return `<section class="confusions"><div><p class="eyebrow">Close calls</p><h3>Confusion pairs</h3><p>These pairs come from your incorrect answers.</p></div>${pairs.length ? `<ol>${pairs.slice(0, isPro() || route === 'demo' ? 12 : 3).map((pair) => `<li><span><bdi>${escapeHtml(pair.typed)}</bdi> <span aria-hidden="true">→</span> <bdi>${escapeHtml(pair.answer)}</bdi></span><small>${pair.count} ${pair.count === 1 ? 'mix-up' : 'mix-ups'}</small></li>`).join('')}</ol>` : `<p class="muted">Wrong guesses will appear here beside the intended word.</p>`}${pairs.length > 3 && !isPro() && route !== 'demo' ? `<p class="pro-note">The free view shows three pairs. The one-time license shows the full list.</p>` : ''}</section>`;
+  return `<section class="confusions"><div><p class="eyebrow">Wrong answers</p><h3>Confusion pairs</h3><p>These pairs come from your incorrect answers.</p></div>${pairs.length ? `<ol>${pairs.slice(0, route === 'demo' || isPro() ? 12 : 3).map((pair) => `<li><span><bdi>${escapeHtml(pair.typed)}</bdi> <span aria-hidden="true">→</span> <bdi>${escapeHtml(pair.answer)}</bdi></span><small>${pair.count} ${pair.count === 1 ? 'mix-up' : 'mix-ups'}</small></li>`).join('')}</ol>` : `<p class="muted">Wrong guesses will appear here beside the intended word.</p>`}${pairs.length > 3 && route !== 'demo' && !isPro() ? `<p class="pro-note">The free view shows three pairs. The one-time license shows the full list.</p>` : ''}</section>`;
 }
 
 function dataPanel(): string {
@@ -213,15 +213,15 @@ function dataPanel(): string {
 
 function paidSection(): string {
   const state = cachedLicense();
-  return `<section class="paid-section" id="paid"><div><p class="eyebrow">Optional one-time license</p><h2>Remove the 50-word limit</h2><p>Pay $12 once for unlimited words and the full confusion-pair history. The free list holds 50 words.</p></div><div class="license-card">${isPro() ? `<p class="license-active"><span aria-hidden="true">✓</span> Personal license active</p><button class="text-button" data-action="remove-license">Remove this license</button>` : `<a class="button primary" href="${checkoutUrl}">Buy for $12 once — opens secure checkout</a><details><summary>Have a license?</summary><form id="license-form"><label for="license-token">Paste your license</label><input id="license-token" name="license" value="${escapeHtml(state?.token || '')}" autocomplete="off" required /><button class="button secondary dark" type="submit" aria-label="Verify license">Verify license</button></form></details>${state?.token && !state.valid ? `<p class="license-warning">This license is not active. Check it or buy a new one.</p>` : ''}<p class="merchant">Sociobot/Dodo is the merchant of record. See terms for refunds.</p>`}</div></section>`;
+  return `<section class="paid-section" id="paid"><div><p class="eyebrow">Optional one-time license</p><h2>Remove the 50-word limit</h2><p>Pay $12 once for unlimited words and the full confusion-pair history. The free list holds 50 words.</p></div><div class="license-card">${isPro() ? `<p class="license-active"><span aria-hidden="true">✓</span> Personal license active</p><button class="text-button" data-action="remove-license">Remove this license</button>` : `<a class="button primary" href="${checkoutUrl}">Buy for $12 once — opens secure checkout</a><details><summary>Have a license?</summary><form id="license-form"><label for="license-token">Paste your license</label><input id="license-token" name="license" value="${escapeHtml(state?.token || '')}" autocomplete="off" required /><button class="button secondary dark" type="submit" aria-label="Verify license">Verify license</button></form></details>${state?.token && !state.valid ? `<p class="license-warning">This license is not active. Check it or buy a new one.</p>` : ''}<p class="merchant">For license or refund questions, email <a href="mailto:support@sociobot.in">support@sociobot.in</a>. Read the <a class="spa-link" href="/terms">license terms</a>.</p>`}</div></section>`;
 }
 
 function privacyPage(): string {
-  return `<main id="main" class="legal-page" tabindex="-1"><p class="eyebrow">Last updated 28 August 2026</p><h1 tabindex="-1">Your word list stays in your browser</h1><p class="lede">Context Cloze keeps words, sentences, due dates, and answers on this device.</p><h2>What stays local</h2><p>Your practice data does not leave this browser. Sample data uses separate browser storage and never reads your real word list.</p><h2>Backups and deletion</h2><p>Backups are files you ask the browser to create. Use your browser’s site-data controls to remove stored app data.</p><h2>License checks</h2><p>If you paste or buy a license, its token stays in browser storage. The app sends it only to Sociobot to check the license.</p><h2>Analytics</h2><p>This app includes no advertising, behavioural analytics, third-party fonts, or third-party scripts.</p><h2>Contact</h2><p>Email <a href="mailto:privacy@sociobot.in">privacy@sociobot.in</a> with a privacy question.</p></main>`;
+  return `<main id="main" class="legal-page" tabindex="-1"><p class="eyebrow">Last updated 29 August 2026</p><h1 tabindex="-1">Your word list stays in your browser</h1><p class="lede">Context Cloze keeps words, sentences, due dates, and answers on this device.</p><h2>What stays local</h2><p>Your practice data does not leave this browser. Sample data uses separate browser storage and never reads or changes your real word list.</p><h2>Backups and deletion</h2><p>Backups are files you ask the browser to create. Use your browser’s site-data controls to remove stored app data.</p><h2>License checks</h2><p>If you paste or buy a license, its token stays in browser storage. The app sends it only to Sociobot to check the license.</p><h2>Analytics</h2><p>This app includes no advertising, behavioural analytics, third-party fonts, or third-party scripts.</p><h2>Contact</h2><p>Email <a href="mailto:privacy@sociobot.in">privacy@sociobot.in</a> with a privacy question.</p></main>`;
 }
 
 function termsPage(): string {
-  return `<main id="main" class="legal-page" tabindex="-1"><p class="eyebrow">Last updated 28 August 2026</p><h1 tabindex="-1">Use Context Cloze for your own sentences</h1><p class="lede">These terms cover the local app and its one-time personal license.</p><h2>Your sentences</h2><p>Only add text you have the right to store. You remain responsible for your word list and example sentences.</p><h2>The service</h2><p>The app is provided as available. Keep backups if losing browser storage would cause harm.</p><h2>One-time license</h2><p>A $12 purchase unlocks unlimited words and full confusion history for one person. Sociobot/Dodo is the merchant of record and handles refunds. A refunded or disputed purchase may revoke its license.</p><h2>Acceptable use</h2><p>Do not interfere with the site, billing API, or other users. The app is not a language course or professional translation service.</p><h2>Contact</h2><p>Email <a href="mailto:support@sociobot.in">support@sociobot.in</a> with a terms question.</p></main>`;
+  return `<main id="main" class="legal-page" tabindex="-1"><p class="eyebrow">Last updated 29 August 2026</p><h1 tabindex="-1">Use Context Cloze for your own sentences</h1><p class="lede">These terms cover the local app and its one-time personal license.</p><h2>Your sentences</h2><p>Only add text you have the right to store. You remain responsible for your word list and example sentences.</p><h2>The service</h2><p>The app is provided as available. Keep backups if losing browser storage would cause harm.</p><h2>One-time license</h2><p>A $12 purchase removes the 50-word limit and shows full confusion history for one person. For license or refund questions, email <a href="mailto:support@sociobot.in">support@sociobot.in</a>.</p><h2>Acceptable use</h2><p>Do not interfere with the site, purchase process, or other users. The app is not a language course or professional translation service.</p><h2>Contact</h2><p>Email <a href="mailto:support@sociobot.in">support@sociobot.in</a> with a terms question.</p></main>`;
 }
 
 function offlinePage(): string {
@@ -271,6 +271,7 @@ async function navigate(path: string, push = true, restoredScroll?: number): Pro
     history.pushState({ scrollY: 0 }, '', `${url.pathname}${url.search}${url.hash}`);
   }
   const next = routeFor(url.pathname, url.search);
+  if (route === 'demo' && next !== 'demo') await Promise.all([store.clearItems(), store.clearReviews()]);
   const modeChanged = (next === 'demo') !== (route === 'demo');
   route = next;
   practice = [];
@@ -416,8 +417,16 @@ async function onAction(event: Event): Promise<void> {
     case 'next-review': practiceIndex += 1; feedback = null; await reloadQuietly(); break;
     case 'close-session': practice = []; practiceIndex = 0; feedback = null; await reloadQuietly(); break;
     case 'export': await exportJson(); break;
-    case 'reset-demo': await store.seedDemo(true); practice = []; await refresh('Demo reset to its original sample.', 'success'); break;
-    case 'leave-demo': await Promise.all([store.clearItems(), store.clearReviews()]); await navigate('/'); break;
+    case 'reset-demo': {
+      await store.seedDemo(true);
+      [items, reviews] = await Promise.all([store.getItems(), store.getReviews()]);
+      practice = items.filter((item) => item.dueAt <= Date.now()).sort((a, b) => a.dueAt - b.dueAt).slice(0, 1);
+      practiceIndex = 0;
+      feedback = null;
+      showNotice('Demo reset to its original sample.', 'success');
+      break;
+    }
+    case 'leave-demo': await navigate('/'); break;
     case 'delete-item': await deleteItem(target); break;
     case 'remove-license': clearLicense(); showNotice('License removed from this device.'); break;
   }

@@ -27,6 +27,24 @@ async function clearDemoStore(page: import('@playwright/test').Page): Promise<vo
   });
 }
 
+async function readStoredWords(page: import('@playwright/test').Page, databaseName: string): Promise<string[]> {
+  return page.evaluate(async (name) => {
+    const database = await new Promise<IDBDatabase>((resolve, reject) => {
+      const request = indexedDB.open(name);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    const words = await new Promise<string[]>((resolve, reject) => {
+      const transaction = database.transaction('items', 'readonly');
+      const request = transaction.objectStore('items').getAll();
+      request.onsuccess = () => resolve((request.result as Array<{ word: string }>).map(({ word }) => word).sort());
+      request.onerror = () => reject(request.error);
+    });
+    database.close();
+    return words;
+  }, databaseName);
+}
+
 test('@claim:demo-sample-count demo opens eight sample words', async ({ page, browser }) => {
   await page.goto('/');
   const sampleLink = page.getByRole('link', { name: 'Try it with sample data' });
@@ -48,17 +66,41 @@ test('@claim:demo-sample-count demo opens eight sample words', async ({ page, br
   await directContext.close();
 });
 
-test('@claim:demo-isolation demo opens with sample data and never enters real storage', async ({ page }) => {
-  await page.goto('/demo');
+test('@claim:demo-isolation demo never reads or changes the real word list', async ({ page }) => {
+  await page.goto('/');
+  await page.getByLabel('Word', { exact: true }).fill('keepsake');
+  await page.getByLabel('Sentence containing that word').fill('This keepsake belongs in the real word list.');
+  await page.getByRole('button', { name: 'Save word' }).click();
+  await expect(page.getByText('1 words', { exact: true })).toBeVisible();
+  const realBeforeDemo = await readStoredWords(page, 'context-cloze-real');
+  expect(realBeforeDemo).toEqual(['keepsake']);
+
+  await page.goto('/?demo=1');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Practise sample words in context');
   await expect(page.getByText('8 words', { exact: true })).toBeVisible();
+  await expect(page.getByText('keepsake', { exact: true })).toHaveCount(0);
+  expect(await readStoredWords(page, 'context-cloze-demo')).not.toContain('keepsake');
+  expect(await readStoredWords(page, 'context-cloze-real')).toEqual(realBeforeDemo);
+
   const addForm = page.locator('#add-form');
-  await addForm.getByLabel('Word', { exact: true }).fill('tenacious');
-  await addForm.getByLabel('Sentence containing that word').fill('She remained tenacious during the long repair.');
+  await addForm.getByLabel('Word', { exact: true }).fill('temporary');
+  await addForm.getByLabel('Sentence containing that word').fill('This temporary word belongs only in the demo.');
   await addForm.getByRole('button', { name: 'Save word' }).click();
   await expect(page.getByText('9 words', { exact: true })).toBeVisible();
+  expect(await readStoredWords(page, 'context-cloze-demo')).toContain('temporary');
+  expect(await readStoredWords(page, 'context-cloze-real')).toEqual(realBeforeDemo);
+
+  await page.getByRole('button', { name: 'Reset demo' }).click();
+  await expect(page.getByRole('heading', { name: 'Type the missing word' })).toBeVisible();
+  await expect(page.getByText('8 words', { exact: true })).toBeVisible();
+  expect(await readStoredWords(page, 'context-cloze-demo')).not.toContain('temporary');
+  expect(await readStoredWords(page, 'context-cloze-real')).toEqual(realBeforeDemo);
+
   await page.getByRole('button', { name: 'Start for real' }).click();
-  await expect(page.getByText('0 words', { exact: true })).toBeVisible();
+  await expect(page.getByText('1 words', { exact: true })).toBeVisible();
+  await expect(page.getByText('keepsake', { exact: true })).toBeVisible();
+  expect(await readStoredWords(page, 'context-cloze-demo')).toEqual([]);
+  expect(await readStoredWords(page, 'context-cloze-real')).toEqual(realBeforeDemo);
 });
 
 test('@claim:typed-cloze each saved word becomes a blank answered by typing', async ({ page }) => {
@@ -194,12 +236,13 @@ test('@claim:no-tracking-resources loads no third-party resources across public 
 });
 
 test('@claim:offline-reload demo reloads offline after the first visit', async ({ page, context }) => {
-  await page.goto('/demo');
+  await page.goto('/?demo=1');
   await page.waitForFunction(() => navigator.serviceWorker?.controller !== null);
   await page.waitForFunction(async () => (await Promise.all((await caches.keys()).map(async (name) => (await caches.open(name)).keys())))
     .flat().some((request) => /\/assets\/[^/]+-[a-z0-9]+\.js$/u.test(new URL(request.url).pathname)));
   await context.setOffline(true);
   await page.reload();
+  await expect(page).toHaveURL('/?demo=1');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Practise sample words in context');
   await expect(page.getByText('8 words', { exact: true })).toBeVisible();
 });
