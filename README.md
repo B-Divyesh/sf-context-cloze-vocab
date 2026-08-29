@@ -49,6 +49,10 @@ npm run build
 layout check in Chromium. `npm run build` writes the static deploy to `dist/`,
 with `dist/index.html` at its root. Inspect it with `npm run preview`.
 
+After deployment, run `npm run test:live` for routing and billing checks. Run
+`npm run test:live:browser` for the cold demo, offline, Axe, focus, privacy,
+mobile, and storage-isolation checks.
+
 ## Deploy
 
 Publish the contents of `dist/` as a static site. Keep

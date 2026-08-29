@@ -12,6 +12,7 @@ const browser = await chromium.launch();
 const result = {
   routes: {}, axeSeriousOrCritical: {}, consoleErrors: [], externalRequests: [],
   mobile: {}, isolation: {}, offline: false, focusAndHistory: false,
+  clearSiteData: false, restoreBackupFocus: null, destinations: {},
   zoomOverflow: null, reducedMotion: null
 };
 
@@ -61,6 +62,22 @@ try {
   const sampleBox = await sample.boundingBox();
   assert(sampleBox && sampleBox.y + sampleBox.height <= 844);
   result.mobile.homeActionBottom = Math.round(sampleBox.y + sampleBox.height);
+  const firstHomeCopy = await page.locator('body').innerText();
+  assert(firstHomeCopy.includes('Add a word and a sentence. Context Cloze hides the word.'));
+  assert(firstHomeCopy.toLowerCase().includes('practice steps'));
+  assert(firstHomeCopy.toLowerCase().includes('your content and storage'));
+  result.destinations.checkout = await page.getByRole('link', { name: /Buy for \$12 once/u }).getAttribute('href');
+  result.destinations.factory = await page.getByRole('link', { name: /Built by Param Factory/u }).getAttribute('href');
+  assert.equal(result.destinations.checkout, 'https://api.sociobot.in/api/v1/products/context-cloze-vocab/checkout');
+  assert.equal(result.destinations.factory, 'https://hello-factory.sociobot.in');
+  const restoreInput = page.locator('#import-file');
+  await restoreInput.focus();
+  result.restoreBackupFocus = await page.locator('.file-label').evaluate((element) => {
+    const style = getComputedStyle(element);
+    return { style: style.outlineStyle, width: style.outlineWidth, color: style.outlineColor };
+  });
+  assert.equal(result.restoreBackupFocus.style, 'solid');
+  assert(Number.parseFloat(result.restoreBackupFocus.width) >= 3);
   await screenshot(page, 'polish-3-live-home-390.png');
   await page.getByLabel('Word', { exact: true }).fill('keepsake');
   await page.getByLabel('Sentence containing that word').fill('This keepsake stays in the real word list.');
@@ -100,7 +117,10 @@ try {
     assert(box && box.width >= 44 && box.height >= 44);
   }
   await screenshot(page, 'polish-3-live-demo-390.png');
-  assert(!(await page.locator('body').innerText()).includes('keepsake'));
+  const demoCopy = await page.locator('body').innerText();
+  assert(!demoCopy.includes('keepsake'));
+  assert(!demoCopy.includes('Close calls'));
+  assert(demoCopy.toLowerCase().includes('wrong answers'));
   assert.equal(await page.evaluate(() => window.sawRealWordInDemo), false);
   assert(!(await readWords(page, 'context-cloze-demo')).includes('keepsake'));
   const add = page.locator('#add-form');
@@ -174,6 +194,31 @@ try {
   assert.deepEqual(result.consoleErrors, []);
   assert.deepEqual(result.externalRequests, []);
   await context.close();
+
+  const clearContext = await browser.newContext();
+  const clearPage = await clearContext.newPage();
+  await clearPage.goto(new URL('/', base).href);
+  await clearPage.getByLabel('Word', { exact: true }).fill('erase-real');
+  await clearPage.getByLabel('Sentence containing that word').fill('This erase-real entry should disappear.');
+  await clearPage.getByRole('button', { name: 'Save word' }).click();
+  await clearPage.goto(new URL('/?demo=1', base).href);
+  const clearAdd = clearPage.locator('#add-form');
+  await clearAdd.getByLabel('Word', { exact: true }).fill('erase-demo');
+  await clearAdd.getByLabel('Sentence containing that word').fill('This erase-demo entry should disappear.');
+  await clearAdd.getByRole('button', { name: 'Save word' }).click();
+  await clearPage.evaluate(() => localStorage.setItem('sb_license:context-cloze-vocab', 'erase-license'));
+  const devtools = await clearContext.newCDPSession(clearPage);
+  await devtools.send('Storage.clearDataForOrigin', { origin: base.origin, storageTypes: 'indexeddb,local_storage' });
+  await clearPage.waitForFunction(async () => (await indexedDB.databases()).every(({ name }) => !name?.startsWith('context-cloze-')));
+  assert.equal(await clearPage.evaluate(() => localStorage.getItem('sb_license:context-cloze-vocab')), null);
+  await clearPage.goto(new URL('/', base).href);
+  await clearPage.getByText('0 words', { exact: true }).waitFor();
+  assert(!(await clearPage.locator('body').innerText()).includes('erase-real'));
+  await clearPage.goto(new URL('/?demo=1', base).href);
+  await clearPage.getByText('8 words', { exact: true }).waitFor();
+  assert(!(await clearPage.locator('body').innerText()).includes('erase-demo'));
+  result.clearSiteData = true;
+  await clearContext.close();
 
   const offlineContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const offlinePage = await offlineContext.newPage();

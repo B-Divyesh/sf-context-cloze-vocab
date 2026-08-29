@@ -1,115 +1,102 @@
-# Context Cloze review 3 handoff
+# Context Cloze polish round 3 handoff
 
 ## Status
 
-**FAIL — review documentation only; product code was not modified.** Review 3
-was performed against commit `4c576aab35ad4b9898db9e89c9db036fc0ac90db` and
-the live site <https://context-cloze-vocab.sociobot.in>.
-
-## Review 3 update
-
-Added `.factory/review-3.md`. It records seven remaining findings: one missing
-automated proof for the privacy promise that demo never reads real data, plus
-residual slogan/mood copy, an unlisted provenance claim, and unlisted
-merchant/refund claims. The night-archive visual system and product code are
-unchanged.
-
-Fresh clone: `/tmp/context-cloze-review3.QrxWCD` at
-`4c576aab35ad4b9898db9e89c9db036fc0ac90db`.
-
-- `npm ci` passed with 0 vulnerabilities.
-- All 19 exact claim commands passed individually.
-- `npm test` passed (the Playwright last-run record has no failed tests).
-- `npm run build` produced `dist/index.html`; JavaScript is 11.26 KB gzip.
-- `npm run test:live` passed: home 200, unknown route 404, checkout 303 to
-  Dodo, and invalid license rejected.
-- A fresh 390 px and desktop first read was clear. The CTA entered a seeded
-  cloze exercise in one click. Manual live storage testing kept real
-  `keepsake` and demo-only `temporary` in separate databases; requests were
-  same-origin. This confirms behaviour but does not replace F-3-1's required
-  automated no-read proof.
+**PASS — every finding from review rounds 1–3 is closed.** The repaired PWA is
+live at <https://context-cloze-vocab.sociobot.in>. The deployed product code is
+commit `3907ecbec4cf16a9321d7f3da90f1c98044c4506`.
 
 ## What changed
 
-- Strengthened `@claim:clear-site-data` so it creates named real/demo records
-  and a license, proves both databases and the license key are absent before
-  reload, then proves the real list is empty and the demo is freshly reseeded.
-- Added `/?demo=1` as a true isolated-demo route. The first-screen action,
-  README, demo contract, and claim sandbox use it; `/demo` remains canonical.
-- Made the one-click demo claim verify the banner, Reset demo, Start for real,
-  active question, eight-word sample, and direct-entry storage namespace.
-- Fixed the mobile history focus/scroll race found during the first live cold
-  check. Back now focuses the page heading without moving it and restores the
-  saved offset instantly. The regression runs at 390 px and waits beyond the
-  prior false-positive interval.
-- Updated the catalog line to: “Practise your own words by typing them into
-  sentence blanks.” It starts with a verb and is 60 characters before newline.
-- Added deploy instructions, the cumulative finding map in
-  `.factory/polish-2.md`, and committed local/live screenshots under
-  `.factory/evidence/`.
+- Rewrote every residual mood label, metaphor, provenance statement, and
+  unproved merchant/refund statement identified in review 3. The first screen
+  remains job-first and keeps its primary sample action visible on a 390 × 844
+  phone.
+- Strengthened `demo-isolation` to prove the demo never displays, reads, or
+  changes a named real word. It also proves demo-only data never reaches the
+  real database, reset restores the active sample question, and exit clears
+  demo records.
+- Cleared items, reviews, and notices before the first render when switching
+  between real and demo stores. This closes the transient real-word toast and
+  list exposure caught during the first post-deploy cold check.
+- Precached the exact `/?demo=1` URL. The catalog path now reloads offline
+  after its first visit, while `/demo` remains the canonical equivalent.
+- Kept route-specific titles, descriptions, canonicals, Open Graph/Twitter
+  metadata, h1 focus, Back scroll restoration, designed HTTP 404, legal links,
+  security headers, and immutable hashed assets under regression coverage.
+- Added `tests/copy.test.ts` and `scripts/verify-live-browser.mjs`. The latter
+  repeats the production mobile, demo, privacy, route, Axe, focus, 200% text,
+  reduced-motion, site-data deletion, request, console, and offline checks.
+- Updated `.factory/claims.json`, `.factory/demo.md`, `.factory/copy-audit.md`,
+  `.factory/polish-3.md`, README, and the catalog line. The catalog description
+  is: “Practise your own words by typing each missing word in context.”
 
-The night-archive palette, clipped paper surfaces, generated environmental
-scene, restrained motion, local-first IndexedDB model, and offline PWA class
-are unchanged.
+The original night-archive palette, generated environmental scene, clipped
+paper surfaces, asymmetric layout, typography, restrained motion, local-first
+IndexedDB model, and `pwa-offline` deployment class remain intact.
 
 ## Clean-clone verification
 
-Final clean clone: `/tmp/context-cloze-polish2-final.DQKxa3` at
-`b1d35773e977d0c7bb4143650eaad9d6df3e8603`.
+Final clean clone: `/tmp/context-cloze-polish3-final.5PRxEl/repo` at
+`3907ecbec4cf16a9321d7f3da90f1c98044c4506`.
 
-- `npm ci`: passed; 0 vulnerabilities.
-- Every one of the 19 exact commands in `.factory/claims.json`: passed
-  individually. IDs: `demo-sample-count`, `demo-isolation`, `typed-cloze`,
+- `npm ci`: passed; 61 packages installed and 0 vulnerabilities.
+- Every one of the 19 exact commands in `.factory/claims.json` passed
+  individually: `demo-sample-count`, `demo-isolation`, `typed-cloze`,
   `typed-scheduling`, `due-queue`, `case-insensitive-marking`, `full-session`,
   `unicode-rtl`, `unicode-normalisation`, `backup-roundtrip`,
-  `confusion-pairs`, `no-tracking-resources`, `local-storage`, `checkout-link`,
-  `license-token-privacy`, `clear-site-data`, `offline-reload`, `free-limit`,
-  and `paid-license`.
-- `npm test`: passed — 6 Vitest unit/config tests and 32 Chromium browser
-  tests. The browser suite includes all-route Axe, keyboard focus, 390 px
-  layout/touch targets, history, privacy requests, storage isolation, offline
-  reload, and claims.
-- `npm run build`: passed and produced `dist/index.html`. Output: JavaScript
-  32.90 KB raw / 11.26 KB gzip; CSS 15.66 KB raw / 4.45 KB gzip; mobile hero
-  16.21 KB; desktop hero 37.10 KB.
+  `confusion-pairs`, `no-tracking-resources`, `local-storage`,
+  `checkout-link`, `license-token-privacy`, `clear-site-data`,
+  `offline-reload`, `free-limit`, and `paid-license`.
+- `npm test`: passed — 9 Vitest unit/config/copy tests and 35 Chromium tests.
+  The browser suite includes every claim, all-route Axe, direct demo entry,
+  transient demo DOM isolation, offline reload, keyboard focus, Back history,
+  route metadata, 390 px first views, legal links, privacy requests, and 44 px
+  demo controls.
+- `npm run build`: passed and produced `dist/index.html`. JavaScript is 33.17
+  KB raw / 11.24 KB gzip; CSS is 15.85 KB raw / 4.48 KB gzip; mobile hero is
+  16.21 KB and desktop hero is 37.10 KB.
 - Local Lighthouse 12.8.2: Performance 100, Accessibility 100, Best Practices
-  100, SEO 100; FCP 906 ms, LCP 1,509 ms, CLS 0, TBT 41 ms.
+  100, SEO 100; FCP 908 ms, LCP 1,512 ms, CLS 0, TBT 49 ms.
 
-## Final live verification
+## Deployment and final live verification
 
-- Cold 390 px home explained the job and audience, and kept **Try it with
-  sample data** in the first viewport. One click reached `/?demo=1` with the
-  banner, seeded question, answer field, **Check answer**, reset, and exit.
-- A direct fresh `/?demo=1` context created only `context-cloze-demo`. Reset
-  removed a temporary ninth word; Start for real opened an empty real list.
-  Offline reload retained the eight sample words.
-- Repeated the full F-2-1 flow on live: after clearing site data, both app
-  databases and the license key were absent before navigation; `/` showed zero
-  words/no `keepsake`; demo reseeded eight words/no `discard-me`.
-- `/`, `/?demo=1`, `/demo`, `/privacy`, `/terms`, and `/offline` returned 200.
-  An unknown route returned the designed page with HTTP 404. Each route had
-  one h1/main, its expected title, and zero serious/critical Axe findings.
-- Route focus, metadata, Restore backup focus, 44 px demo controls, reduced
-  motion, and 200% text were checked. At 200% the 390 px demo had 0 px
-  horizontal overflow. Mobile Back restored `scrollY` from 5,218 to 5,218 and
-  left the home h1 focused.
-- Normal home/demo use emitted no console errors and no cross-origin requests.
-  `npm run test:live` passed: home 200, unknown route 404, checkout 303 to
-  `checkout.dodopayments.com`, and an invalid license remained locked.
+The work-order build command `npm ci && npm test && npm run build` passed. The
+artifact was deployed with the configured static deployment script. The first
+cold-live screenshot exposed a transient saved-word notice; that issue was
+fixed in `3907ecb`, rebuilt, pushed, and redeployed before final verification.
+
+- `npm run test:live`: home 200, designed unknown route 404, checkout 303 to
+  `checkout.dodopayments.com`, and invalid license rejected.
+- `npm run test:live:browser`: `/`, `/demo`, `/privacy`, `/terms`, and
+  `/offline` returned 200; an unknown route returned 404. All had one h1, one
+  main, correct title/social metadata, and zero serious/critical Axe findings.
+- Cold 390 px home kept **Try it with sample data** at y=513. One click opened
+  `/?demo=1`; its blank, answer field, and **Check answer** ended at y=564.
+  Demo banner actions and the compact home link remained at least 44 × 44 px.
+- The live isolation run kept real `keepsake`, never exposed it during any demo
+  DOM mutation, removed demo `temporary` on reset, and left the demo database
+  empty after exit. The final demo screenshot has no real-word toast.
+- Live browser site-data deletion removed named real/demo records and the
+  stored license before reload, then showed an empty real list and fresh
+  eight-word demo. The exact `/?demo=1` URL also reloaded offline.
+- Normal home/demo/privacy/terms use made no cross-origin requests and emitted
+  no console errors. Restore backup had a solid 3 px dark-amber focus ring.
+  Route focus and Back scroll passed; 200% text had 0 px horizontal overflow;
+  reduced motion used a 0.00001 s animation duration.
+- `/opt/fleet/lib/verify-url.sh` passed for `/` and `/?demo=1`: correct title,
+  `lang=en`, one h1, main, alt text, and zero page/console errors.
 - Live Lighthouse 12.8.2: Performance 100, Accessibility 100, Best Practices
-  100, SEO 100; FCP 922 ms, LCP 1,072 ms, CLS 0, TBT 51 ms.
-- `/opt/fleet/lib/verify-url.sh` passed for home and `/?demo=1`: correct title,
-  `lang=en`, one h1, main landmark, image alt text, and zero console errors.
+  100, SEO 100; FCP 910 ms, LCP 1,060 ms, CLS 0, TBT 46 ms.
 - Deployed JavaScript SHA-256 matches local `dist`:
-  `a1bcb070bdb09e23a8b878902a582edafa5fc3b7f500ea7b640e99615c92d6c5`.
+  `db87327f770515e395c8548eca33afed1ded87225bf53d278a14febbef044697`.
+  CSS also matches:
+  `75b2e2f0082bd39698d940e251f0e643c78f17f81618d945077353e9c23bcfb7`.
   Hashed assets return `Cache-Control: public, max-age=31536000, immutable`.
 
-Screenshots:
-
-- `.factory/evidence/polish-2-live-home-390.png`
-- `.factory/evidence/polish-2-live-demo-390.png`
-- `.factory/evidence/polish-2-privacy.png`
-- `.factory/evidence/polish-2-404.png`
+Evidence screenshots are under `.factory/evidence/` with `polish-3-` and
+`polish-3-live-` prefixes. The complete finding-to-evidence map is in
+`.factory/polish-3.md`.
 
 ## Run and verify
 
@@ -118,13 +105,13 @@ npm ci
 npm test
 npm run build
 npm run test:live
+npm run test:live:browser
 ```
 
 For an individual visitor-facing claim, run its exact command from
-`.factory/claims.json`. Use `npm run preview` to inspect `dist/` locally.
+`.factory/claims.json`. Set `LIVE_URL` to check another deployment and
+`LIVE_EVIDENCE_DIR` to save live browser screenshots.
 
 ## Known gaps and next steps
 
-See `.factory/review-3.md`. Resolve F-3-1 through F-3-7, then rerun the exact
-claim commands and repeat the cold review. No product-code changes were made
-in this review work order.
+None. No review finding, deferred minor item, stub, or TODO remains.
