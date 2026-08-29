@@ -1,0 +1,14 @@
+{
+  "url": "https://context-cloze-vocab.sociobot.in/?demo=1",
+  "loadMs": 597,
+  "errors": [],
+  "a11y": {
+    "title": "Demo — Context Cloze",
+    "lang": "en",
+    "h1": 1,
+    "main": true,
+    "imgsMissingAlt": 0,
+    "buttonsUnlabeled": 16,
+    "textLength": 1651
+  }
+}

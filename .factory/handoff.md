@@ -1,125 +1,88 @@
-# Review 4 handoff
-
-## Current review status
-
-**FAIL — review documentation only; product code was not modified.** The live
-site was reviewed at <https://context-cloze-vocab.sociobot.in> against clean
-clone commit `4641519f0d7869e005cf4a5a89229efa9e3dbdb7`.
-
-- Wrote `.factory/review-4.md` after fresh 390 × 844 and 1440 × 900 cold
-  checks, demo isolation/reset/exit, offline, requests, link crawl, routing,
-  accessibility, and visual-identity checks.
-- In `/tmp/context-cloze-review4.Hhc2xq/repo`, `npm ci`, every exact claim
-  command, `npm test` (9 Vitest and 35 Chromium tests), `npm run build`,
-  `npm run test:live`, and `npm run test:live:browser` passed. `dist/` was
-  produced. The production browser check found no console errors, normal
-  cross-origin requests, or serious/critical Axe findings.
-- Remaining work is F-4-1 through F-4-5: add checkout redirect evidence to
-  its tagged claim test; list/test or remove three public functional/limit
-  statements; and replace two ambiguous/metaphorical headings.
-
-The following is the prior polish-round handoff, retained as historical
-evidence.
-
-# Context Cloze polish round 3 handoff
+# Context Cloze — polish round 4 handoff
 
 ## Status
 
-**PASS — every finding from review rounds 1–3 is closed.** The repaired PWA is
-live at <https://context-cloze-vocab.sociobot.in>. The deployed product code is
-commit `3907ecbec4cf16a9321d7f3da90f1c98044c4506`.
+**PASS — all findings from review rounds 1–4 are closed.** The repair commit
+`f64054aa830b8752587df37b9d0feaffda2b05cb` was pushed to `main` and deployed
+to <https://context-cloze-vocab.sociobot.in> with the configured Azure Static
+Web App deployment. The product remains a local-first offline PWA with its
+night-archive visual system.
 
 ## What changed
 
-- Rewrote every residual mood label, metaphor, provenance statement, and
-  unproved merchant/refund statement identified in review 3. The first screen
-  remains job-first and keeps its primary sample action visible on a 390 × 844
-  phone.
-- Strengthened `demo-isolation` to prove the demo never displays, reads, or
-  changes a named real word. It also proves demo-only data never reaches the
-  real database, reset restores the active sample question, and exit clears
-  demo records.
-- Cleared items, reviews, and notices before the first render when switching
-  between real and demo stores. This closes the transient real-word toast and
-  list exposure caught during the first post-deploy cold check.
-- Precached the exact `/?demo=1` URL. The catalog path now reloads offline
-  after its first visit, while `/demo` remains the canonical equivalent.
-- Kept route-specific titles, descriptions, canonicals, Open Graph/Twitter
-  metadata, h1 focus, Back scroll restoration, designed HTTP 404, legal links,
-  security headers, and immutable hashed assets under regression coverage.
-- Added `tests/copy.test.ts` and `scripts/verify-live-browser.mjs`. The latter
-  repeats the production mobile, demo, privacy, route, Axe, focus, 200% text,
-  reduced-motion, site-data deletion, request, console, and offline checks.
-- Updated `.factory/claims.json`, `.factory/demo.md`, `.factory/copy-audit.md`,
-  `.factory/polish-3.md`, README, and the catalog line. The catalog description
-  is: “Practise your own words by typing each missing word in context.”
+- Made the checkout claim test real: it now checks the visible Sociobot link,
+  requests that exact URL, and requires a 303 HTTPS Dodo checkout-session
+  redirect.
+- Added three missing claim entries and isolated browser tests for tab-separated
+  bulk entry, due-only short sessions, and the exact three-pair free view.
+- Replaced the last ambiguous headings with **Type the missing word** and
+  **Page not found** in both the SPA and the static 404 response. Updated the
+  static 404, copy, release, and live-route regressions accordingly.
+- Preserved every earlier repair: direct isolated `/?demo=1`, demo banner/reset
+  and exit, storage isolation, plain backup controls, legal pages, routing and
+  metadata, focus/scroll restoration, mobile layout, privacy controls,
+  offline reload, and hashed immutable PWA assets.
+- Updated the catalog line to “Practise missing words in your own sentences.”
+  (verb-first, 45 characters), the copy audit, claim inventory, and the round-4
+  finding map.
 
-The original night-archive palette, generated environmental scene, clipped
-paper surfaces, asymmetric layout, typography, restrained motion, local-first
-IndexedDB model, and `pwa-offline` deployment class remain intact.
+## Exact verification evidence
 
-## Clean-clone verification
+Clean clone: `/tmp/context-cloze-polish4.50qrw6/repo` at `f64054a`.
 
-Final clean clone: `/tmp/context-cloze-polish3-final.5PRxEl/repo` at
-`3907ecbec4cf16a9321d7f3da90f1c98044c4506`.
-
-- `npm ci`: passed; 61 packages installed and 0 vulnerabilities.
-- Every one of the 19 exact commands in `.factory/claims.json` passed
-  individually: `demo-sample-count`, `demo-isolation`, `typed-cloze`,
+- `npm ci`: passed; 61 packages installed; 0 vulnerabilities.
+- Every one of the 22 exact commands declared in `.factory/claims.json`
+  passed individually: `demo-sample-count`, `demo-isolation`, `typed-cloze`,
   `typed-scheduling`, `due-queue`, `case-insensitive-marking`, `full-session`,
   `unicode-rtl`, `unicode-normalisation`, `backup-roundtrip`,
   `confusion-pairs`, `no-tracking-resources`, `local-storage`,
-  `checkout-link`, `license-token-privacy`, `clear-site-data`,
+  `checkout-link`, `tab-bulk-entry`, `due-session-only`,
+  `free-confusion-limit`, `license-token-privacy`, `clear-site-data`,
   `offline-reload`, `free-limit`, and `paid-license`.
-- `npm test`: passed — 9 Vitest unit/config/copy tests and 35 Chromium tests.
-  The browser suite includes every claim, all-route Axe, direct demo entry,
-  transient demo DOM isolation, offline reload, keyboard focus, Back history,
-  route metadata, 390 px first views, legal links, privacy requests, and 44 px
-  demo controls.
-- `npm run build`: passed and produced `dist/index.html`. JavaScript is 33.17
-  KB raw / 11.24 KB gzip; CSS is 15.85 KB raw / 4.48 KB gzip; mobile hero is
-  16.21 KB and desktop hero is 37.10 KB.
-- Local Lighthouse 12.8.2: Performance 100, Accessibility 100, Best Practices
-  100, SEO 100; FCP 908 ms, LCP 1,512 ms, CLS 0, TBT 49 ms.
-
-## Deployment and final live verification
-
-The work-order build command `npm ci && npm test && npm run build` passed. The
-artifact was deployed with the configured static deployment script. The first
-cold-live screenshot exposed a transient saved-word notice; that issue was
-fixed in `3907ecb`, rebuilt, pushed, and redeployed before final verification.
-
-- `npm run test:live`: home 200, designed unknown route 404, checkout 303 to
-  `checkout.dodopayments.com`, and invalid license rejected.
-- `npm run test:live:browser`: `/`, `/demo`, `/privacy`, `/terms`, and
-  `/offline` returned 200; an unknown route returned 404. All had one h1, one
-  main, correct title/social metadata, and zero serious/critical Axe findings.
-- Cold 390 px home kept **Try it with sample data** at y=513. One click opened
-  `/?demo=1`; its blank, answer field, and **Check answer** ended at y=564.
-  Demo banner actions and the compact home link remained at least 44 × 44 px.
-- The live isolation run kept real `keepsake`, never exposed it during any demo
-  DOM mutation, removed demo `temporary` on reset, and left the demo database
-  empty after exit. The final demo screenshot has no real-word toast.
-- Live browser site-data deletion removed named real/demo records and the
-  stored license before reload, then showed an empty real list and fresh
-  eight-word demo. The exact `/?demo=1` URL also reloaded offline.
-- Normal home/demo/privacy/terms use made no cross-origin requests and emitted
-  no console errors. Restore backup had a solid 3 px dark-amber focus ring.
-  Route focus and Back scroll passed; 200% text had 0 px horizontal overflow;
-  reduced motion used a 0.00001 s animation duration.
-- `/opt/fleet/lib/verify-url.sh` passed for `/` and `/?demo=1`: correct title,
-  `lang=en`, one h1, main, alt text, and zero page/console errors.
-- Live Lighthouse 12.8.2: Performance 100, Accessibility 100, Best Practices
-  100, SEO 100; FCP 910 ms, LCP 1,060 ms, CLS 0, TBT 46 ms.
-- Deployed JavaScript SHA-256 matches local `dist`:
-  `db87327f770515e395c8548eca33afed1ded87225bf53d278a14febbef044697`.
-  CSS also matches:
+- `npm test`: passed — 10 Vitest unit/config/copy tests and 38 Chromium
+  Playwright tests. This includes all-route Axe, keyboard focus, 390 px layout,
+  direct demo entry, privacy/network checks, clear-site-data, and offline
+  reload.
+- `npm run build`: passed and produced `dist/index.html`. Initial JS is
+  33.17 KB raw / 11.23 KB gzip; CSS is 15.85 KB raw / 4.48 KB gzip; mobile and
+  desktop hero assets are 16.21 KB and 37.10 KB.
+- Static deployment: `/opt/fleet/lib/deploy-static.sh context-cloze-vocab
+  /work/repo/dist` succeeded (deployment ID
+  `ae5e8a62-5633-439b-b6e7-9be2d5690189`).
+- `npm run test:live`: passed. Home returned 200; an unknown URL returned 404
+  with **Page not found**; checkout returned 303 to
+  `checkout.dodopayments.com`; an invalid license stayed inactive.
+- Deployed bytes match the local build: `index-TYOseg00.js` SHA-256 is
+  `713ea1202a5f82b15b0b72c25e898b1d2a32a450d9e446e68b89bf70ea068500`
+  and `style-C7sAJ7po.css` is
   `75b2e2f0082bd39698d940e251f0e643c78f17f81618d945077353e9c23bcfb7`.
-  Hashed assets return `Cache-Control: public, max-age=31536000, immutable`.
+  Both live hashed assets return `Cache-Control: public, max-age=31536000,
+  immutable`; the live CSP permits only self and the documented Sociobot API.
+- `npm run test:live:browser`: passed cold against production. `/`, `/demo`,
+  `/privacy`, `/terms`, and `/offline` returned 200; unknown route returned
+  404. Every route had one h1 and main landmark, zero serious/critical Axe
+  issues, no console errors, and no normal external requests. It also passed
+  demo isolation/reset/exit, direct offline reload, focus + Back scroll,
+  200% text with 0 px overflow, and reduced motion. At 390 px, the home CTA
+  ended at y=513 and demo’s answer controls at y=587.
+- A separate cold production exercise rechecked the new review-4 behaviours:
+  tab-separated demo bulk entry saved a ninth word, a due/future fixture ran a
+  one-question due session, an unlicensed four-pair fixture rendered exactly
+  three pairs, checkout returned its Dodo 303, and the static 404 had the new
+  heading. Screenshots: `polish-4-live-tab-bulk.png`,
+  `polish-4-live-due-session.png`, `polish-4-live-free-pairs.png`, and
+  `polish-4-live-404.png`.
+- `/opt/fleet/lib/verify-url.sh` passed for the home URL and `/?demo=1`.
+  Evidence: `.factory/evidence/polish-4-verify-home/verify.json` and
+  `.factory/evidence/polish-4-verify-demo/verify.json` (both show title,
+  `lang=en`, one h1, main, image alt coverage, and zero errors).
+- Live mobile Lighthouse report: Performance 100, Accessibility 100, Best
+  Practices 100, SEO 100; FCP 1.0 s, LCP 1.1 s, CLS 0, TBT 50 ms. Evidence:
+  `.factory/evidence/polish-4-lighthouse.json`.
 
-Evidence screenshots are under `.factory/evidence/` with `polish-3-` and
-`polish-3-live-` prefixes. The complete finding-to-evidence map is in
-`.factory/polish-3.md`.
+Live screenshots are committed under `.factory/evidence/` with the
+`polish-4-live-` prefix; the complete finding-to-change-to-evidence map is
+in `.factory/polish-4.md`.
 
 ## Run and verify
 
@@ -131,10 +94,10 @@ npm run test:live
 npm run test:live:browser
 ```
 
-For an individual visitor-facing claim, run its exact command from
-`.factory/claims.json`. Set `LIVE_URL` to check another deployment and
-`LIVE_EVIDENCE_DIR` to save live browser screenshots.
+Run an individual visitor-facing claim with the exact command in
+`.factory/claims.json`. Set `LIVE_URL` for another deployed environment and
+`LIVE_EVIDENCE_DIR` to write browser evidence elsewhere.
 
 ## Known gaps and next steps
 
-None. No review finding, deferred minor item, stub, or TODO remains.
+None. No blocking, major, minor, or deferred review finding remains.

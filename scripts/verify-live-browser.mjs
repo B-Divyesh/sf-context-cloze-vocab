@@ -149,7 +149,7 @@ try {
     ['/privacy', 'Privacy — Context Cloze'],
     ['/terms', 'Terms — Context Cloze'],
     ['/offline', 'Offline — Context Cloze'],
-    ['/polish-3-missing', 'Page not found — Context Cloze']
+    ['/polish-4-missing', 'Page not found — Context Cloze']
   ]);
   for (const [path, title] of routeExpectations) {
     testingExpected404 = path.includes('missing');
