@@ -9,7 +9,8 @@
     "preview": "vite preview --host 127.0.0.1",
     "test": "vitest run && playwright test",
     "test:unit": "vitest run",
-    "test:live": "node scripts/verify-live.mjs"
+    "test:live": "node scripts/verify-live.mjs",
+    "test:live:browser": "node scripts/verify-live-browser.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.10.2",

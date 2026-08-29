@@ -75,10 +75,20 @@ test('@claim:demo-isolation demo never reads or changes the real word list', asy
   const realBeforeDemo = await readStoredWords(page, 'context-cloze-real');
   expect(realBeforeDemo).toEqual(['keepsake']);
 
-  await page.goto('/?demo=1');
+  await page.evaluate(() => {
+    const state = window as unknown as { sawRealWordInDemo: boolean };
+    state.sawRealWordInDemo = false;
+    new MutationObserver(() => {
+      if (new URL(location.href).searchParams.get('demo') === '1' && document.body.innerText.includes('keepsake')) {
+        state.sawRealWordInDemo = true;
+      }
+    }).observe(document.body, { childList: true, subtree: true, characterData: true });
+  });
+  await page.getByRole('link', { name: 'Try it with sample data' }).click();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Practise sample words in context');
   await expect(page.getByText('8 words', { exact: true })).toBeVisible();
-  await expect(page.getByText('keepsake', { exact: true })).toHaveCount(0);
+  await expect(page.locator('body')).not.toContainText('keepsake');
+  expect(await page.evaluate(() => (window as unknown as { sawRealWordInDemo: boolean }).sawRealWordInDemo)).toBe(false);
   expect(await readStoredWords(page, 'context-cloze-demo')).not.toContain('keepsake');
   expect(await readStoredWords(page, 'context-cloze-real')).toEqual(realBeforeDemo);
 

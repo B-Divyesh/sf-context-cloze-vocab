@@ -276,7 +276,13 @@ async function navigate(path: string, push = true, restoredScroll?: number): Pro
   route = next;
   practice = [];
   feedback = null;
-  if (modeChanged) store = new VocabularyStore(route === 'demo');
+  if (modeChanged) {
+    items = [];
+    reviews = [];
+    notice = '';
+    noticeKind = 'info';
+    store = new VocabularyStore(route === 'demo');
+  }
   if (route === 'home' || route === 'demo') await loadData(); else render();
   requestAnimationFrame(() => {
     const heading = document.querySelector<HTMLElement>('main h1');
