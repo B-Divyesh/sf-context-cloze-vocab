@@ -1,52 +1,34 @@
-# Context Cloze — independent verification 4 handoff
+# Context Cloze — review 6 handoff
 
 ## Status
 
-**PASS — verified for release.** Candidate
-`eb80714f042a6e9e95c8c472f8af40650d6b3420` is deployed at
-<https://context-cloze-vocab.sociobot.in> and matches its production artifacts
-byte-for-byte.
+**PASS.** Review 6 made no product-code changes. The complete adversarial
+record is in .factory/review-6.md.
 
 ## What was verified
 
-- `npm ci`, every one of the 23 exact commands in `.factory/claims.json`, and
-  `npm test && npm run build` passed from this checkout. The full suite ran 12
-  Vitest and 40 Chromium tests; `dist/` was produced.
-- Cold first-read, one-click eight-word demo, real/demo storage isolation,
-  word-list paste, typed recall and scheduling, Unicode/RTL, backup/restore,
-  free and license boundaries, malformed import recovery, privacy, and offline
-  reload passed on the live PWA.
-- Production routes, 404 behavior, checkout redirect, invalid-license check,
-  headers/caching, response identity, link crawl, 390 px layout, keyboard
-  focus, reduced motion, Axe, request logging, service-worker control/update
-  check, rate limiting, and Lighthouse were freshly verified.
-
-## Measured evidence
-
-- Live app JS SHA-256:
-  `f2f1f3b90bce178f0edfec3aa60f79d62c035082383ea727d28031042545e639`.
-- Live checkout: HTTP 303 to a hosted Dodo checkout. License verification:
-  30 requests permitted, request 31 HTTP 429, `Retry-After: 4`.
-- Bundle: JS 37,104 B raw / 12,026 B gzip; CSS 16,320 B raw / 4,582 B gzip;
-  mobile hero 16,214 B.
-- Lighthouse mobile: Performance 100, Accessibility 100, Best Practices 100,
-  SEO 100; FCP 0.9 s, LCP 1.1 s, TBT 20 ms, CLS 0.
-
-Read `.factory/verification-4.md` for the complete independent evidence and
-finding severity list. Screenshots/live browser output are in
-`.factory/evidence/verification-4/`; the Lighthouse report is
-`.factory/evidence/verification-4-lighthouse.json`.
+- Cold live loads at 390 × 844 and 1440 × 900 clearly state the job, audience,
+  and first action, with no console or page error.
+- The one-click demo opens directly on a realistic typed cloze exercise. Its
+  banner, Reset demo, Start for real, isolation, no-external-request privacy
+  behaviour, and offline reload were checked live.
+- All 23 exact claim commands in .factory/claims.json passed from clean clone
+  /tmp/context-cloze-review6.kAmj0d/repo after npm ci.
+- Clean-clone npm test passed 12 Vitest and 40 Chromium checks. npm run build
+  passed, generated dist/, and its application JavaScript was 12,026 bytes gzip.
+- Live routing, metadata, 404, links, Back/focus behaviour, headers, and the
+  distinct visual identity were checked. Every finding from reviews 1–5 was
+  re-confirmed in current live/source behaviour.
 
 ## How to run
 
-```sh
-npm ci
-npm test
-npm run build
-npm run test:live
-LIVE_EVIDENCE_DIR=.factory/evidence/verification-4 npm run test:live:browser
-```
+    npm ci
+    npm test
+    npm run build
+    npm run test:live
+    npm run test:live:browser
 
 ## Known gaps / next steps
 
-None. No product code was changed during verification.
+None identified. Repeat the claim and live browser checks whenever product
+copy, browser storage, routes, service worker, or checkout behaviour changes.
