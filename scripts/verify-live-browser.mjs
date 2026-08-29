@@ -13,7 +13,7 @@ const result = {
   routes: {}, axeSeriousOrCritical: {}, consoleErrors: [], externalRequests: [],
   mobile: {}, isolation: {}, offline: false, focusAndHistory: false,
   clearSiteData: false, restoreBackupFocus: null, destinations: {},
-  zoomOverflow: null, reducedMotion: null
+  zoomOverflow: null, reducedMotion: null, wordListPaste: {}
 };
 
 function evidencePath(name) {
@@ -67,6 +67,7 @@ try {
   assert(firstHomeCopy.toLowerCase().includes('practice steps'));
   assert(firstHomeCopy.toLowerCase().includes('your content and storage'));
   assert.equal(await page.locator('#how h3').nth(1).innerText(), 'Type the missing word');
+  assert(!firstHomeCopy.includes('Backup files use JSON format.'));
   result.destinations.checkout = await page.getByRole('link', { name: /Buy for \$12 once/u }).getAttribute('href');
   result.destinations.factory = await page.getByRole('link', { name: /Built by Param Factory/u }).getAttribute('href');
   assert.equal(result.destinations.checkout, 'https://api.sociobot.in/api/v1/products/context-cloze-vocab/checkout');
@@ -79,7 +80,7 @@ try {
   });
   assert.equal(result.restoreBackupFocus.style, 'solid');
   assert(Number.parseFloat(result.restoreBackupFocus.width) >= 3);
-  await screenshot(page, 'polish-4-live-home-390.png');
+  await screenshot(page, 'polish-5-live-home-390.png');
   await page.getByLabel('Word', { exact: true }).fill('keepsake');
   await page.getByLabel('Sentence containing that word').fill('This keepsake stays in the real word list.');
   await page.getByRole('button', { name: 'Save word' }).click();
@@ -117,13 +118,33 @@ try {
     const box = await target.boundingBox();
     assert(box && box.width >= 44 && box.height >= 44);
   }
-  await screenshot(page, 'polish-4-live-demo-390.png');
+  await screenshot(page, 'polish-5-live-demo-390.png');
   const demoCopy = await page.locator('body').innerText();
   assert(!demoCopy.includes('keepsake'));
   assert(!demoCopy.includes('Close calls'));
   assert(demoCopy.toLowerCase().includes('wrong answers'));
   assert.equal(await page.evaluate(() => window.sawRealWordInDemo), false);
   assert(!(await readWords(page, 'context-cloze-demo')).includes('keepsake'));
+
+  await page.getByText('Paste a word list', { exact: true }).click();
+  await page.getByLabel('One word per line').fill('zealous\nresilient\nwhimsical');
+  await page.getByRole('button', { name: 'Save words and add sentences' }).click();
+  assert.equal(await page.getByRole('heading', { name: 'Add a sentence for “zealous”' }).innerText(), 'Add a sentence for “zealous”');
+  assert(await page.getByLabel('Sentence using zealous').evaluate((element) => element === document.activeElement));
+  assert.deepEqual(await readWords(page, 'context-cloze-real'), realBefore);
+  const demoAfterWordPaste = await readWords(page, 'context-cloze-demo');
+  for (const word of ['zealous', 'resilient', 'whimsical']) assert(demoAfterWordPaste.includes(word));
+  await page.getByLabel('Sentence using zealous').fill('A zealous student reviewed every morning.');
+  await page.getByRole('button', { name: 'Save sentence and continue' }).click();
+  assert.equal(await page.getByRole('heading', { name: 'Add a sentence for “resilient”' }).innerText(), 'Add a sentence for “resilient”');
+  const dynamicSerious = (await new AxeBuilder({ page }).analyze()).violations
+    .filter((violation) => ['serious', 'critical'].includes(violation.impact || ''));
+  assert.equal(dynamicSerious.length, 0);
+  assert((await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)) <= 1);
+  await page.locator('#sentence-queue-heading').scrollIntoViewIfNeeded();
+  await screenshot(page, 'polish-5-live-word-list-390.png');
+  result.wordListPaste = { demoWords: demoAfterWordPaste.length, nextWord: 'resilient', axeSeriousOrCritical: dynamicSerious.length };
+
   const add = page.locator('#add-form');
   await add.getByLabel('Word', { exact: true }).fill('temporary');
   await add.getByLabel('Sentence containing that word').fill('This temporary word stays inside the demo.');
@@ -149,7 +170,7 @@ try {
     ['/privacy', 'Privacy — Context Cloze'],
     ['/terms', 'Terms — Context Cloze'],
     ['/offline', 'Offline — Context Cloze'],
-    ['/polish-4-missing', 'Page not found — Context Cloze']
+    ['/polish-5-missing', 'Page not found — Context Cloze']
   ]);
   for (const [path, title] of routeExpectations) {
     testingExpected404 = path.includes('missing');
@@ -167,9 +188,9 @@ try {
     assert.equal(serious.length, 0);
     result.routes[path] = expectedStatus;
     result.axeSeriousOrCritical[path] = serious.length;
-    if (path === '/privacy') await screenshot(page, 'polish-4-live-privacy.png', true);
-    if (path === '/terms') await screenshot(page, 'polish-4-live-terms.png', true);
-    if (path.includes('missing')) await screenshot(page, 'polish-4-live-404.png', true);
+    if (path === '/privacy') await screenshot(page, 'polish-5-live-privacy.png', true);
+    if (path === '/terms') await screenshot(page, 'polish-5-live-terms.png', true);
+    if (path.includes('missing')) await screenshot(page, 'polish-5-live-404.png', true);
     testingExpected404 = false;
   }
 

@@ -68,12 +68,12 @@ export class VocabularyStore {
     }
     const safe = parsed.items.filter((item): item is VocabItem => Boolean(
       item && typeof item.id === 'string' && typeof item.word === 'string' &&
-      typeof item.sentence === 'string' && containsWord(item.sentence, item.word) &&
+      typeof item.sentence === 'string' && (!item.sentence.trim() || containsWord(item.sentence, item.word)) &&
       typeof item.createdAt === 'number' && typeof item.dueAt === 'number' &&
       typeof item.intervalDays === 'number' && typeof item.ease === 'number' &&
       typeof item.lapses === 'number' && typeof item.reviewCount === 'number'
     ));
-    if (safe.length !== parsed.items.length) throw new Error('Some imported words are incomplete or do not appear in their sentences.');
+    if (safe.length !== parsed.items.length) throw new Error('Some imported words are invalid or do not appear in their sentences.');
     await Promise.all(safe.map((item) => this.putItem(item)));
     if (Array.isArray(parsed.reviews)) {
       const safeReviews = parsed.reviews.filter((review): review is Review => Boolean(

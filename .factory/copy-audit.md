@@ -1,6 +1,6 @@
 # Landing copy audit
 
-Audited 2026-08-29 after polish round 4. Counts treat prices, email addresses,
+Audited 2026-08-29 after polish round 5. Counts treat prices, email addresses,
 URLs, and hyphenated terms as one word. No public sentence
 exceeds 22 words or contains a banned marketing word. Every claim-like line
 below names its matching entry in `.factory/claims.json`.
@@ -36,9 +36,15 @@ three tested facts. The primary sample action remains inside the first 390 ×
 | Add a word and a sentence that uses it. | 9 | Empty-state instruction |
 | You can then start a typed review. | 7 | `typed-cloze` |
 | Saved words will appear here. | 5 | Empty-list state |
+| Paste one word per line. | 5 | `word-list-paste` |
+| Add each sentence in the next step. | 7 | `word-list-paste` |
+| Add a sentence for “zealous” | 5 | Ordered sentence-step heading |
+| Use the word exactly as written. | 6 | Sentence-step instruction |
+| You will see the next word after saving. | 8 | `word-list-paste` |
+| Add a sentence before practising this word. | 7 | Pending-word state |
+| Add a sentence before starting practice. | 6 | No-ready-word state |
 | A tab works instead of the \| mark. | 8 | `tab-bulk-entry` |
-| Backups include your sentences, schedule, and answer history. | 8 | `backup-roundtrip` |
-| Backup files use JSON format. | 5 | File-format note beside plain controls |
+| Backups include your words, sentences, schedule, and answer history. | 9 | `backup-roundtrip` |
 | Type the missing word | 4 | Practice instruction |
 | A short session uses only the words due today. | 9 | `due-session-only` |
 | You can practise every word or add another sentence. | 9 | Empty due-state next steps |
@@ -49,8 +55,9 @@ three tested facts. The primary sample action remains inside the first 390 ×
 | The one-time license shows the full list. | 8 | `paid-license` |
 
 Actions consistently name their result: **Save word**, **Check answer**,
-**Practise due words**, **Practise all words**, **Download backup**, **Restore
-backup**, **Reset demo**, and **Start for real**.
+**Save words and add sentences**, **Save sentence and continue**, **Practise
+due words**, **Practise all words**, **Download backup**, **Restore backup**,
+**Reset demo**, and **Start for real**.
 
 ## Explanation, storage, and license
 
@@ -87,7 +94,8 @@ backup**, **Reset demo**, and **Start for real**.
 | Time-based prompts | due words |
 | Isolated sample mode | demo |
 | Portable file | backup |
+| Saved word without context | word that needs a sentence |
 | Paid entitlement | one-time license |
 
-Catalog description: “Practise missing words in your own sentences.” It has 7
-words, starts with a verb, and is 45 characters.
+Catalog description: “Paste a word list, add each sentence, and practise every
+missing word.” It has 12 words, starts with a verb, and is 70 characters.

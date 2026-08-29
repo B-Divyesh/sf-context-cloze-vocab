@@ -9,7 +9,7 @@ describe('release copy', () => {
   it('keeps the catalog line verb-first and within 120 characters', () => {
     const description = read('.factory/catalog-description.txt').trim();
     expect(description.length).toBeLessThanOrEqual(120);
-    expect(description).toMatch(/^Practise\b/u);
+    expect(description).toMatch(/^Paste\b/u);
   });
 
   it('removes every residual review-3 slogan and unproved public statement', () => {
@@ -32,6 +32,11 @@ describe('release copy', () => {
     expect(publicCopy).toContain('Page not found');
     expect(publicCopy).not.toContain('Type what belongs');
     expect(publicCopy).not.toContain('This sentence has no ending');
+  });
+
+  it('keeps file-format jargon out of the public product panel', () => {
+    expect(read('src/main.ts')).not.toContain('Backup files use JSON format.');
+    expect(read('README.md')).toContain('Backup files use\nJSON format.');
   });
 
   it('lists exactly one browser test for every visitor-facing claim', () => {

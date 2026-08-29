@@ -3,8 +3,9 @@
 Practise your word list with typed sentence blanks.
 
 Context Cloze is for independent language learners who recognise a word but
-cannot retrieve it while writing or speaking. Add a word and its sentence, then
-type the missing word when it is due. Wrong guesses become confusion pairs.
+cannot retrieve it while writing or speaking. Paste one word per line, then add
+each sentence in order. Type the missing word when it is due. Wrong guesses
+become confusion pairs.
 
 Live site: <https://context-cloze-vocab.sociobot.in>
 
@@ -13,6 +14,7 @@ One-click sample: <https://context-cloze-vocab.sociobot.in/?demo=1>
 ## What it does
 
 - Turns each saved word into a blank that you answer by typing.
+- Accepts a pasted word list before you add each sentence.
 - Keeps your word list in this browser during practice.
 - Accepts right-to-left words and accented answers typed in either common form.
 - Updates each word’s next due date after an answer.
@@ -69,8 +71,8 @@ full policy.
 
 ## Developer notes
 
-Real and sample word lists use separate IndexedDB databases. Backups use JSON
-format.
+Real and sample word lists use separate IndexedDB databases. Backup files use
+JSON format.
 
 - Product brief: [`.factory/brief.json`](.factory/brief.json)
 - Visual system and asset provenance: [`.factory/design.md`](.factory/design.md)

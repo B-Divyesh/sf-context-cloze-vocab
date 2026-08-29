@@ -168,9 +168,9 @@ test('@claim:case-insensitive-marking capitalisation does not affect marking', a
   await expect(page.getByText('Correct.', { exact: true })).toBeVisible();
 });
 
-test('@claim:full-session a full session includes every saved word', async ({ page }) => {
+test('@claim:full-session a full session includes every saved word with a sentence', async ({ page }) => {
   await page.goto('/demo');
-  await page.getByRole('button', { name: 'Practise all eight sample words' }).click();
+  await page.getByRole('button', { name: 'Practise all 8 words with sentences' }).click();
   await expect(page.getByText('Sentence 1 of 8', { exact: true })).toBeVisible();
   for (let index = 0; index < 8; index += 1) {
     await page.getByLabel('Your answer').fill('not the answer');
@@ -216,13 +216,16 @@ test('@claim:due-queue due words return as questions', async ({ page }) => {
 
 test('@claim:backup-roundtrip round-trips every word schedule and answer history through a fresh demo store', async ({ page }) => {
   await page.goto('/demo');
+  await page.getByText('Paste a word list', { exact: true }).click();
+  await page.getByLabel('One word per line').fill('unfinished');
+  await page.getByRole('button', { name: 'Save words and add sentences' }).click();
   const data = await readExport(page) as { product: string; items: unknown[]; reviews: unknown[] };
   expect(data.product).toBe('context-cloze-vocab');
-  expect(data.items).toHaveLength(8);
+  expect(data.items).toHaveLength(9);
   expect(data.reviews).toHaveLength(5);
   await clearDemoStore(page);
   await page.locator('#import-file').setInputFiles({ name: 'context-cloze.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(data)) });
-  await expect(page.getByRole('status')).toHaveText('Imported 8 words.');
+  await expect(page.getByRole('status')).toHaveText('Imported 9 words.');
   const restored = await readExport(page) as { items: unknown[]; reviews: unknown[] };
   expect(restored.items).toEqual(data.items);
   expect(restored.reviews).toEqual(data.reviews);
@@ -230,13 +233,34 @@ test('@claim:backup-roundtrip round-trips every word schedule and answer history
 
 test('@claim:tab-bulk-entry saves a tab-separated word and sentence', async ({ page }) => {
   await page.goto('/?demo=1');
-  await page.getByText('Paste several words').click();
+  await page.getByText('Paste words with sentences').click();
   await page.getByLabel('One per line: word | sentence').fill('tenacious\tA tenacious learner keeps practising.');
   await page.getByRole('button', { name: 'Save pasted words' }).click();
   await expect(page.getByRole('status')).toHaveText('Saved 1 word.');
   await expect(page.getByText('9 words', { exact: true })).toBeVisible();
   await expect(page.locator('.word-list').getByText('tenacious', { exact: true })).toBeVisible();
   expect(await readStoredWords(page, 'context-cloze-demo')).toContain('tenacious');
+});
+
+test('@claim:word-list-paste saves bare words in demo storage and opens the ordered sentence step', async ({ page }) => {
+  await page.goto('/?demo=1');
+  await page.getByText('Paste a word list', { exact: true }).click();
+  await page.getByLabel('One word per line').fill('zealous\nresilient\nwhimsical');
+  await page.getByRole('button', { name: 'Save words and add sentences' }).click();
+  await expect(page.getByRole('status')).toHaveText('Saved 3 words. Add their sentences next.');
+  await expect(page.getByRole('heading', { name: 'Add a sentence for “zealous”' })).toBeVisible();
+  await expect(page.getByLabel('Sentence using zealous')).toBeFocused();
+  await expect(page.getByText('11 words', { exact: true })).toBeVisible();
+  expect(await page.evaluate(async () => (await indexedDB.databases()).map(({ name }) => name).filter(Boolean))).toEqual(['context-cloze-demo']);
+  expect(await readStoredWords(page, 'context-cloze-demo')).toEqual(expect.arrayContaining(['zealous', 'resilient', 'whimsical']));
+
+  await page.getByLabel('Sentence using zealous').fill('A zealous student reviewed every morning.');
+  await page.getByRole('button', { name: 'Save sentence and continue' }).click();
+  await expect(page.getByRole('heading', { name: 'Add a sentence for “resilient”' })).toBeVisible();
+  await expect(page.getByLabel('Sentence using resilient')).toBeFocused();
+  const stored = await readExport(page) as { items: Array<{ word: string; sentence: string }> };
+  expect(stored.items.find((item) => item.word === 'zealous')?.sentence).toBe('A zealous student reviewed every morning.');
+  expect(stored.items.find((item) => item.word === 'resilient')?.sentence).toBe('');
 });
 
 test('@claim:due-session-only a short session excludes future words', async ({ page }) => {
@@ -316,7 +340,7 @@ test('@claim:free-limit landing states and enforces the 50-word free tier', asyn
   await expect(page.getByText('Free for 50 words')).toBeVisible();
   await expect(page.getByText('Pay $12 once for unlimited words and the full confusion-pair history. The free list holds 50 words.')).toBeVisible();
   const lines = Array.from({ length: 51 }, (_, index) => `word${index} | This sentence contains word${index}.`).join('\n');
-  await page.getByText('Paste several words').click();
+  await page.getByText('Paste words with sentences').click();
   await page.getByLabel('One per line: word | sentence').fill(lines);
   await page.getByRole('button', { name: 'Save pasted words' }).click();
   await expect(page.getByText('Only 50 free word spaces remain. Paste fewer lines or add a license.')).toBeVisible();

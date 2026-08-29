@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { answerMatches, clozeSentence, confusionPairs, containsWord, parseBulk, schedule } from '../src/model';
+import { answerMatches, clozeSentence, confusionPairs, containsWord, parseBulk, parseWordList, schedule } from '../src/model';
 import type { Review, VocabItem } from '../src/types';
 
 const item: VocabItem = {
@@ -24,6 +24,11 @@ describe('practice model', () => {
     const parsed = parseBulk('scarce | Water is scarce.\nbad line');
     expect(parsed.rows).toHaveLength(1);
     expect(parsed.errors[0]).toContain('Line 2');
+  });
+
+  it('parses a one-word-per-line list and reports repeats', () => {
+    expect(parseWordList('elusive\nplausible\nmeticulous').words).toEqual(['elusive', 'plausible', 'meticulous']);
+    expect(parseWordList('Café\ncafe\u0301').errors[0]).toContain('Line 2');
   });
 
   it('counts repeated confusion pairs', () => {

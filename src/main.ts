@@ -1,7 +1,7 @@
 import './styles.css';
 import heroDesktop from './assets/night-archive-1200.webp';
 import heroMobile from './assets/night-archive-720.webp';
-import { answerMatches, clozeSentence, confusionPairs, containsWord, newItem, parseBulk, schedule } from './model';
+import { answerMatches, clozeSentence, confusionPairs, containsWord, isReadyForPractice, newItem, parseBulk, parseWordList, schedule } from './model';
 import { VocabularyStore } from './storage';
 import { cachedLicense, captureLicense, checkoutUrl, clearLicense, isPro, saveLicense, verifyLicense } from './license';
 import type { Review, VocabItem } from './types';
@@ -142,7 +142,8 @@ function demoPage(): string {
 
 function workspace(title: string, isDemoDesk = false): string {
   const now = Date.now();
-  const due = items.filter((item) => item.dueAt <= now).sort((a, b) => a.dueAt - b.dueAt);
+  const ready = items.filter(isReadyForPractice);
+  const due = ready.filter((item) => item.dueAt <= now).sort((a, b) => a.dueAt - b.dueAt);
   const pairs = confusionPairs(items, reviews);
   return `<section id="practice" class="workspace" aria-labelledby="desk-title">
     ${isDemoDesk ? '' : `<div class="workspace-head"><div><p class="eyebrow">Local practice</p><h2 id="desk-title">${title}</h2></div><div class="stats" aria-label="Word list status"><span><strong>${items.length}</strong> words</span><span><strong>${due.length}</strong> due now</span><span><strong>${reviews.length}</strong> answers</span></div></div>`}
@@ -152,7 +153,7 @@ function workspace(title: string, isDemoDesk = false): string {
       ${addPanel()}
       ${libraryPanel()}
     </div>
-    ${items.length ? confusionPanel(pairs) : ''}
+    ${ready.length ? confusionPanel(pairs) : ''}
     ${dataPanel()}
   </section>`;
 }
@@ -162,6 +163,8 @@ function emptyWorkspace(): string {
 }
 
 function practicePanel(due: VocabItem[]): string {
+  const readyCount = items.filter(isReadyForPractice).length;
+  const hasPending = readyCount < items.length;
   if (practice.length && practiceIndex < practice.length) {
     const item = practice[practiceIndex];
     return `<section class="review-sheet" aria-labelledby="review-heading">
@@ -173,18 +176,21 @@ function practicePanel(due: VocabItem[]): string {
         <label for="answer">Your answer</label>
         <div class="answer-row"><input id="answer" name="answer" dir="auto" autocomplete="off" autocapitalize="off" spellcheck="false" ${feedback ? 'disabled' : ''} required /><button class="button primary" type="submit" ${feedback ? 'disabled' : ''}>Check answer</button></div>
       </form>
-      ${route === 'demo' && !feedback ? `<button class="text-button session-switch" data-action="start-all">Practise all eight sample words</button>` : ''}
+      ${route === 'demo' && !feedback ? `<button class="text-button session-switch" data-action="start-all">Practise all ${readyCount} ${readyCount === 1 ? 'word' : 'words'} with sentences</button>` : ''}
       ${feedback ? `<div class="feedback ${feedback.correct ? 'correct' : 'incorrect'}" role="status"><strong>${feedback.correct ? 'Correct.' : 'Not this time.'}</strong> The answer is <bdi>${escapeHtml(feedback.answer)}</bdi>.${!feedback.correct ? ` You typed <bdi>${escapeHtml(feedback.typed || 'nothing')}</bdi>.` : ''}</div><button class="button primary" data-action="next-review">${practiceIndex + 1 === practice.length ? 'Finish session' : 'Next sentence'}</button>` : ''}
     </section>`;
   }
   if (practice.length && practiceIndex >= practice.length) {
     return `<div class="session-done"><p class="eyebrow">Session complete</p><h3>You answered ${practice.length} sentence${practice.length === 1 ? '' : 's'}.</h3><p>Your next due dates are saved on this device.</p><button class="button primary" data-action="close-session">Return to your words</button></div>`;
   }
-  return `<div class="due-strip"><div><h3>${due.length ? `${due.length} ${due.length === 1 ? 'word is' : 'words are'} ready` : 'Nothing is due now'}</h3><p>${due.length ? 'A short session uses only the words due today.' : 'You can practise every word or add another sentence.'}</p></div><div>${due.length ? `<button class="button primary" data-action="start-due">Practise due words</button>` : ''}<button class="button secondary dark" data-action="start-all">Practise all words</button></div></div>`;
+  return `<div class="due-strip"><div><h3>${due.length ? `${due.length} ${due.length === 1 ? 'word is' : 'words are'} ready` : 'Nothing is due now'}</h3><p>${due.length ? 'A short session uses only the words due today.' : readyCount ? 'You can practise every word or add another sentence.' : 'Add a sentence before starting practice.'}</p></div><div>${due.length ? `<button class="button primary" data-action="start-due">Practise due words</button>` : ''}${readyCount ? `<button class="button secondary dark" data-action="start-all">${hasPending ? 'Practise words with sentences' : 'Practise all words'}</button>` : ''}</div></div>`;
 }
 
 function addPanel(): string {
+  const pending = items.filter((item) => !isReadyForPractice(item)).sort((a, b) => a.createdAt - b.createdAt || a.word.localeCompare(b.word));
+  const next = pending[0];
   return `<section id="add-words" class="desk-panel"><p class="eyebrow">Build your list</p><h3>Add words and sentences</h3>
+    ${next ? `<div class="sentence-queue" aria-labelledby="sentence-queue-heading"><p class="queue-count">${pending.length} ${pending.length === 1 ? 'word needs' : 'words need'} a sentence</p><h4 id="sentence-queue-heading">Add a sentence for <bdi>“${escapeHtml(next.word)}”</bdi></h4><p>Use the word exactly as written. You will see the next word after saving.</p><form id="sentence-queue-form" data-item-id="${escapeHtml(next.id)}" novalidate><label for="queued-sentence">Sentence using <bdi>${escapeHtml(next.word)}</bdi></label><textarea id="queued-sentence" name="sentence" dir="auto" rows="3" maxlength="500" required></textarea><p id="sentence-queue-error" class="form-error" role="alert"></p><button class="button primary" type="submit">Save sentence and continue</button></form></div>` : ''}
     <form id="add-form" novalidate>
       <label for="word">Word</label><input id="word" name="word" dir="auto" maxlength="80" required />
       <label for="sentence">Sentence containing that word</label><textarea id="sentence" name="sentence" dir="auto" rows="3" maxlength="500" required></textarea>
@@ -192,14 +198,15 @@ function addPanel(): string {
       <p id="add-error" class="form-error" role="alert"></p>
       <button class="button primary" type="submit">Save word</button>
     </form>
-    <details class="bulk-add"><summary>Paste several words</summary><form id="bulk-form" novalidate><label for="bulk">One per line: word | sentence</label><textarea id="bulk" name="bulk" dir="auto" rows="6" placeholder="scarce | Clean water becomes scarce in summer."></textarea><p class="field-help">A tab works instead of the | mark.</p><p id="bulk-error" class="form-error" role="alert"></p><button class="button secondary dark" type="submit" aria-label="Save pasted words">Save pasted words</button></form></details>
+    <details class="bulk-add"><summary>Paste a word list</summary><form id="word-list-form" novalidate><p class="field-help">Paste one word per line. Add each sentence in the next step.</p><label for="word-list">One word per line</label><textarea id="word-list" name="words" dir="auto" rows="6" placeholder="elusive&#10;plausible&#10;meticulous"></textarea><p id="word-list-error" class="form-error" role="alert"></p><button class="button secondary dark" type="submit">Save words and add sentences</button></form></details>
+    <details class="bulk-add"><summary>Paste words with sentences</summary><form id="bulk-form" novalidate><label for="bulk">One per line: word | sentence</label><textarea id="bulk" name="bulk" dir="auto" rows="6" placeholder="scarce | Clean water becomes scarce in summer."></textarea><p class="field-help">A tab works instead of the | mark.</p><p id="bulk-error" class="form-error" role="alert"></p><button class="button secondary dark" type="submit" aria-label="Save pasted words">Save pasted words</button></form></details>
   </section>`;
 }
 
 function libraryPanel(): string {
   const sorted = [...items].sort((a, b) => a.word.localeCompare(b.word));
   return `<section class="desk-panel library"><div class="panel-heading"><div><p class="eyebrow">Your word list</p><h3>Word list</h3></div><span>${items.length}${route !== 'demo' && !isPro() ? ' / 50 free' : ''}</span></div>
-    ${sorted.length ? `<ul class="word-list">${sorted.map((item) => `<li data-item-id="${item.id}"><div class="word-row"><div><strong dir="auto">${escapeHtml(item.word)}</strong><p dir="auto">${escapeHtml(item.sentence)}</p><small>${dueLabel(item.dueAt)}</small></div><details><summary aria-label="Edit ${escapeHtml(item.word)}">Edit</summary><form class="edit-form"><label>Word<input name="word" value="${escapeHtml(item.word)}" dir="auto" required /></label><label>Sentence<textarea name="sentence" dir="auto" required>${escapeHtml(item.sentence)}</textarea></label><label>Meaning or hint<input name="note" value="${escapeHtml(item.note)}" dir="auto" /></label><p class="form-error" role="alert"></p><div><button class="button small primary" type="submit">Save changes</button><button class="text-button danger" type="button" data-action="delete-item">Delete word</button></div></form></details></div></li>`).join('')}</ul>` : `<p class="muted">Saved words will appear here.</p>`}
+    ${sorted.length ? `<ul class="word-list">${sorted.map((item) => `<li data-item-id="${item.id}"><div class="word-row"><div><strong dir="auto">${escapeHtml(item.word)}</strong>${isReadyForPractice(item) ? `<p dir="auto">${escapeHtml(item.sentence)}</p><small>${dueLabel(item.dueAt)}</small>` : `<p class="pending-copy">Add a sentence before practising this word.</p><small>Needs a sentence</small>`}</div><details><summary aria-label="Edit ${escapeHtml(item.word)}">Edit</summary><form class="edit-form"><label>Word<input name="word" value="${escapeHtml(item.word)}" dir="auto" required /></label><label>Sentence<textarea name="sentence" dir="auto" required>${escapeHtml(item.sentence)}</textarea></label><label>Meaning or hint<input name="note" value="${escapeHtml(item.note)}" dir="auto" /></label><p class="form-error" role="alert"></p><div><button class="button small primary" type="submit">Save changes</button><button class="text-button danger" type="button" data-action="delete-item">Delete word</button></div></form></details></div></li>`).join('')}</ul>` : `<p class="muted">Saved words will appear here.</p>`}
   </section>`;
 }
 
@@ -208,7 +215,7 @@ function confusionPanel(pairs: ReturnType<typeof confusionPairs>): string {
 }
 
 function dataPanel(): string {
-  return `<section class="data-panel"><div><p class="eyebrow">Keep your word list</p><h3>Back up or restore your word list</h3><p>Backups include your sentences, schedule, and answer history.</p><p class="field-help">Backup files use JSON format.</p></div><div class="data-actions"><button class="button secondary dark" data-action="export">Download backup</button><label class="button secondary dark file-label">Restore backup<input id="import-file" type="file" accept="application/json,.json" /></label></div></section>`;
+  return `<section class="data-panel"><div><p class="eyebrow">Keep your word list</p><h3>Back up or restore your word list</h3><p>Backups include your words, sentences, schedule, and answer history.</p></div><div class="data-actions"><button class="button secondary dark" data-action="export">Download backup</button><label class="button secondary dark file-label">Restore backup<input id="import-file" type="file" accept="application/json,.json" /></label></div></section>`;
 }
 
 function paidSection(): string {
@@ -243,7 +250,13 @@ function showNotice(message: string, kind: 'info' | 'error' | 'success' = 'info'
   notice = message;
   noticeKind = kind;
   render();
-  window.setTimeout(() => { if (notice === message) { notice = ''; render(); } }, 3500);
+  window.setTimeout(() => {
+    if (notice !== message) return;
+    notice = '';
+    document.querySelector('.toast')?.remove();
+    const announcer = document.querySelector<HTMLElement>('.announcer');
+    if (announcer) announcer.textContent = '';
+  }, 3500);
 }
 
 async function loadData(): Promise<void> {
@@ -253,7 +266,7 @@ async function loadData(): Promise<void> {
     if (route === 'demo') await store.seedDemo();
     [items, reviews] = await Promise.all([store.getItems(), store.getReviews()]);
     if (route === 'demo' && practice.length === 0) {
-      practice = items.filter((item) => item.dueAt <= Date.now()).sort((a, b) => a.dueAt - b.dueAt).slice(0, 1);
+      practice = items.filter((item) => isReadyForPractice(item) && item.dueAt <= Date.now()).sort((a, b) => a.dueAt - b.dueAt).slice(0, 1);
       practiceIndex = 0;
     }
   } catch {
@@ -318,6 +331,8 @@ function bindEvents(): void {
   }));
 
   document.querySelector('#add-form')?.addEventListener('submit', onAdd);
+  document.querySelector('#sentence-queue-form')?.addEventListener('submit', onQueuedSentence);
+  document.querySelector('#word-list-form')?.addEventListener('submit', onWordListAdd);
   document.querySelector('#bulk-form')?.addEventListener('submit', onBulkAdd);
   document.querySelector('#answer-form')?.addEventListener('submit', onAnswer);
   document.querySelectorAll<HTMLFormElement>('.edit-form').forEach((form) => form.addEventListener('submit', onEdit));
@@ -352,6 +367,39 @@ async function onBulkAdd(event: Event): Promise<void> {
   await Promise.all(parsed.rows.map((row) => store.putItem(newItem(row.word, row.sentence))));
   form.reset();
   await refresh(`Saved ${parsed.rows.length} ${parsed.rows.length === 1 ? 'word' : 'words'}.`, 'success');
+}
+
+async function onWordListAdd(event: Event): Promise<void> {
+  event.preventDefault();
+  const form = event.currentTarget as HTMLFormElement;
+  const parsed = parseWordList(String(new FormData(form).get('words') || ''));
+  const error = form.querySelector<HTMLElement>('#word-list-error')!;
+  if (parsed.errors.length) { error.textContent = parsed.errors.join(' '); return; }
+  if (!parsed.words.length) { error.textContent = 'Paste at least one word.'; return; }
+  const existing = new Set(items.map((item) => item.word.normalize('NFKC').toLocaleLowerCase()));
+  const duplicate = parsed.words.find((word) => existing.has(word.normalize('NFKC').toLocaleLowerCase()));
+  if (duplicate) { error.textContent = `“${duplicate}” is already in this word list.`; return; }
+  if (!isPro() && route !== 'demo' && items.length + parsed.words.length > 50) { error.textContent = `Only ${50 - items.length} free word spaces remain. Paste fewer words or add a license.`; return; }
+  const createdAt = Date.now();
+  await Promise.all(parsed.words.map((word, index) => store.putItem(newItem(word, '', '', createdAt + index))));
+  form.reset();
+  await refresh(`Saved ${parsed.words.length} ${parsed.words.length === 1 ? 'word' : 'words'}. Add ${parsed.words.length === 1 ? 'its' : 'their'} sentences next.`, 'success');
+  requestAnimationFrame(() => document.querySelector<HTMLTextAreaElement>('#queued-sentence')?.focus());
+}
+
+async function onQueuedSentence(event: Event): Promise<void> {
+  event.preventDefault();
+  const form = event.currentTarget as HTMLFormElement;
+  const item = items.find((candidate) => candidate.id === form.dataset.itemId);
+  if (!item) return;
+  const sentence = String(new FormData(form).get('sentence') || '').trim();
+  const error = form.querySelector<HTMLElement>('#sentence-queue-error')!;
+  if (!sentence) { error.textContent = 'Add a sentence before continuing.'; return; }
+  if (!containsWord(sentence, item.word)) { error.textContent = `The sentence must include “${item.word}” exactly as written.`; return; }
+  await store.putItem({ ...item, sentence: sentence.normalize('NFC') });
+  const remaining = items.filter((candidate) => candidate.id !== item.id && !isReadyForPractice(candidate)).length;
+  await refresh(remaining ? `Saved the sentence for “${item.word}”. Add the next sentence.` : `Saved the sentence for “${item.word}”.`, 'success');
+  requestAnimationFrame(() => document.querySelector<HTMLTextAreaElement>('#queued-sentence')?.focus());
 }
 
 async function onEdit(event: Event): Promise<void> {
@@ -418,15 +466,15 @@ async function onLicense(event: Event): Promise<void> {
 async function onAction(event: Event): Promise<void> {
   const target = event.currentTarget as HTMLElement;
   switch (target.dataset.action) {
-    case 'start-due': practice = items.filter((item) => item.dueAt <= Date.now()).sort((a, b) => a.dueAt - b.dueAt); practiceIndex = 0; feedback = null; render(); break;
-    case 'start-all': practice = [...items].sort(() => Math.random() - 0.5); practiceIndex = 0; feedback = null; render(); break;
+    case 'start-due': practice = items.filter((item) => isReadyForPractice(item) && item.dueAt <= Date.now()).sort((a, b) => a.dueAt - b.dueAt); practiceIndex = 0; feedback = null; render(); break;
+    case 'start-all': practice = items.filter(isReadyForPractice).sort(() => Math.random() - 0.5); practiceIndex = 0; feedback = null; render(); break;
     case 'next-review': practiceIndex += 1; feedback = null; await reloadQuietly(); break;
     case 'close-session': practice = []; practiceIndex = 0; feedback = null; await reloadQuietly(); break;
     case 'export': await exportJson(); break;
     case 'reset-demo': {
       await store.seedDemo(true);
       [items, reviews] = await Promise.all([store.getItems(), store.getReviews()]);
-      practice = items.filter((item) => item.dueAt <= Date.now()).sort((a, b) => a.dueAt - b.dueAt).slice(0, 1);
+      practice = items.filter((item) => isReadyForPractice(item) && item.dueAt <= Date.now()).sort((a, b) => a.dueAt - b.dueAt).slice(0, 1);
       practiceIndex = 0;
       feedback = null;
       showNotice('Demo reset to its original sample.', 'success');

@@ -20,6 +20,9 @@ export const clozeSentence = (sentence: string, word: string): string => {
 export const containsWord = (sentence: string, word: string): boolean =>
   sentence.normalize('NFKC').toLocaleLowerCase().includes(normalizeAnswer(word));
 
+export const isReadyForPractice = (item: VocabItem): boolean =>
+  item.sentence.trim().length > 0 && containsWord(item.sentence, item.word);
+
 export function newItem(word: string, sentence: string, note = '', now = Date.now()): VocabItem {
   return {
     id: crypto.randomUUID(),
@@ -80,6 +83,28 @@ export function parseBulk(text: string): { rows: Array<{ word: string; sentence:
     rows.push({ word, sentence });
   });
   return { rows, errors };
+}
+
+export function parseWordList(text: string): { words: string[]; errors: string[] } {
+  const words: string[] = [];
+  const errors: string[] = [];
+  const seen = new Set<string>();
+  text.split(/\r?\n/).forEach((raw, index) => {
+    const word = raw.normalize('NFC').trim();
+    if (!word) return;
+    if (word.length > 80) {
+      errors.push(`Line ${index + 1} is longer than 80 characters.`);
+      return;
+    }
+    const key = normalizeAnswer(word);
+    if (seen.has(key)) {
+      errors.push(`Line ${index + 1} repeats an earlier word.`);
+      return;
+    }
+    seen.add(key);
+    words.push(word);
+  });
+  return { words, errors };
 }
 
 const sampleRows = [

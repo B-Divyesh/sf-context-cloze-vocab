@@ -43,7 +43,7 @@
   },
   {
     "id": "full-session",
-    "claim": "A full session practises every saved word.",
+    "claim": "A full session practises every saved word that has a sentence.",
     "where": "practice desk",
     "test": "npm test -- --grep @claim:full-session",
     "sandbox": "fresh demo; start all eight sample words, answer each, and assert the completed eight-sentence session"
@@ -103,6 +103,13 @@
     "where": "bulk entry help",
     "test": "npm test -- --grep @claim:tab-bulk-entry",
     "sandbox": "fresh demo; paste one tab-separated word and sentence through bulk entry, save it, and assert the new word appears in the demo list"
+  },
+  {
+    "id": "word-list-paste",
+    "claim": "You can paste one word per line, then add each sentence in order.",
+    "where": "word-list entry panel, README",
+    "test": "npm test -- --grep @claim:word-list-paste",
+    "sandbox": "fresh /?demo=1; paste three bare words, assert only the demo database exists, verify the first sentence step is focused, save it, and verify the second word appears next"
   },
   {
     "id": "due-session-only",

@@ -76,6 +76,18 @@ test('keyboard focus is visible on Restore backup', async ({ page }) => {
   await expect(page.locator('.file-label')).toHaveCSS('outline-style', 'solid');
 });
 
+test('pasted-word sentence queue is accessible at 390px', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/?demo=1');
+  await page.getByText('Paste a word list', { exact: true }).click();
+  await page.getByLabel('One word per line').fill('zealous\nresilient\nwhimsical');
+  await page.getByRole('button', { name: 'Save words and add sentences' }).click();
+  await expect(page.getByLabel('Sentence using zealous')).toBeFocused();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+  const results = await new AxeBuilder({ page: page as never }).analyze();
+  expect(results.violations.filter((violation) => ['serious', 'critical'].includes(violation.impact || ''))).toEqual([]);
+});
+
 test('back navigation restores the prior scroll position', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
