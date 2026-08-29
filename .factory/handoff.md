@@ -1,11 +1,33 @@
-# Context Cloze polish round 2 handoff
+# Context Cloze review 3 handoff
 
 ## Status
 
-**PASS — every finding in review 1 and review 2 is closed.** The repaired
-product commit is `b1d35773e977d0c7bb4143650eaad9d6df3e8603`, deployed to
-<https://context-cloze-vocab.sociobot.in> through the static work-order path
-(final Azure deployment `bceeb4ab-464b-4c4c-861d-0d62f8a9b47d`).
+**FAIL — review documentation only; product code was not modified.** Review 3
+was performed against commit `4c576aab35ad4b9898db9e89c9db036fc0ac90db` and
+the live site <https://context-cloze-vocab.sociobot.in>.
+
+## Review 3 update
+
+Added `.factory/review-3.md`. It records seven remaining findings: one missing
+automated proof for the privacy promise that demo never reads real data, plus
+residual slogan/mood copy, an unlisted provenance claim, and unlisted
+merchant/refund claims. The night-archive visual system and product code are
+unchanged.
+
+Fresh clone: `/tmp/context-cloze-review3.QrxWCD` at
+`4c576aab35ad4b9898db9e89c9db036fc0ac90db`.
+
+- `npm ci` passed with 0 vulnerabilities.
+- All 19 exact claim commands passed individually.
+- `npm test` passed (the Playwright last-run record has no failed tests).
+- `npm run build` produced `dist/index.html`; JavaScript is 11.26 KB gzip.
+- `npm run test:live` passed: home 200, unknown route 404, checkout 303 to
+  Dodo, and invalid license rejected.
+- A fresh 390 px and desktop first read was clear. The CTA entered a seeded
+  cloze exercise in one click. Manual live storage testing kept real
+  `keepsake` and demo-only `temporary` in separate databases; requests were
+  same-origin. This confirms behaviour but does not replace F-3-1's required
+  automated no-read proof.
 
 ## What changed
 
@@ -103,4 +125,6 @@ For an individual visitor-facing claim, run its exact command from
 
 ## Known gaps and next steps
 
-None. No review finding, deferred minor item, stub, or TODO remains.
+See `.factory/review-3.md`. Resolve F-3-1 through F-3-7, then rerun the exact
+claim commands and repeat the cold review. No product-code changes were made
+in this review work order.
