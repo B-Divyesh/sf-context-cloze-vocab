@@ -1,0 +1,14 @@
+{
+  "url": "https://context-cloze-vocab.sociobot.in/",
+  "loadMs": 578,
+  "errors": [],
+  "a11y": {
+    "title": "Context Cloze — practise words in sentences",
+    "lang": "en",
+    "h1": 1,
+    "main": true,
+    "imgsMissingAlt": 0,
+    "buttonsUnlabeled": 1,
+    "textLength": 1929
+  }
+}
