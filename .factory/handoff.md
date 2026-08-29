@@ -1,3 +1,26 @@
+# Review 4 handoff
+
+## Current review status
+
+**FAIL — review documentation only; product code was not modified.** The live
+site was reviewed at <https://context-cloze-vocab.sociobot.in> against clean
+clone commit `4641519f0d7869e005cf4a5a89229efa9e3dbdb7`.
+
+- Wrote `.factory/review-4.md` after fresh 390 × 844 and 1440 × 900 cold
+  checks, demo isolation/reset/exit, offline, requests, link crawl, routing,
+  accessibility, and visual-identity checks.
+- In `/tmp/context-cloze-review4.Hhc2xq/repo`, `npm ci`, every exact claim
+  command, `npm test` (9 Vitest and 35 Chromium tests), `npm run build`,
+  `npm run test:live`, and `npm run test:live:browser` passed. `dist/` was
+  produced. The production browser check found no console errors, normal
+  cross-origin requests, or serious/critical Axe findings.
+- Remaining work is F-4-1 through F-4-5: add checkout redirect evidence to
+  its tagged claim test; list/test or remove three public functional/limit
+  statements; and replace two ambiguous/metaphorical headings.
+
+The following is the prior polish-round handoff, retained as historical
+evidence.
+
 # Context Cloze polish round 3 handoff
 
 ## Status
