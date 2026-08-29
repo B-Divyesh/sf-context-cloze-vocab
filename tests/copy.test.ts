@@ -26,6 +26,14 @@ describe('release copy', () => {
     ]) expect(publicCopy).not.toContain(phrase);
   });
 
+  it('uses plain headings for the missing-word step and missing page', () => {
+    const publicCopy = [read('src/main.ts'), read('public/404.html')].join('\n');
+    expect(publicCopy).toContain('Type the missing word');
+    expect(publicCopy).toContain('Page not found');
+    expect(publicCopy).not.toContain('Type what belongs');
+    expect(publicCopy).not.toContain('This sentence has no ending');
+  });
+
   it('lists exactly one browser test for every visitor-facing claim', () => {
     const claims = JSON.parse(read('.factory/claims.json')) as Array<{ id: string; test: string }>;
     const browserTests = read('tests/claims.spec.ts');

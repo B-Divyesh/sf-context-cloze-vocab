@@ -21,7 +21,7 @@ describe('static-host release configuration', () => {
       { route: '/offline', rewrite: '/offline/index.html' }
     ]));
     expect(page).toContain('<main id="main"');
-    expect(page).toContain('<h1>This sentence has no ending</h1>');
+    expect(page).toContain('<h1>Page not found</h1>');
     expect(page).toContain('property="og:title"');
     expect(page).toContain('apple-touch-icon');
   });

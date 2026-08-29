@@ -16,7 +16,7 @@ assert.match(homeHtml, /<title>Context Cloze — practise words in sentences<\/t
 const missing = await get(new URL('/release-check-missing-page', site));
 assert.equal(missing.status, 404, `Expected an unknown route to return 404, got ${missing.status}`);
 const missingHtml = await missing.text();
-assert.match(missingHtml, /<h1>This sentence has no ending<\/h1>/);
+assert.match(missingHtml, /<h1>Page not found<\/h1>/);
 
 const checkout = await get(new URL('./checkout', `${billing}/`));
 assert.equal(checkout.status, 303, `Expected hosted checkout redirect, got ${checkout.status}`);

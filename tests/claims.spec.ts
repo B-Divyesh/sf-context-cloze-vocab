@@ -45,6 +45,26 @@ async function readStoredWords(page: import('@playwright/test').Page, databaseNa
   }, databaseName);
 }
 
+function backupFixture(items: Array<{ id: string; word: string; sentence: string; dueAt?: number }>, reviews: Array<{ id: string; itemId: string; answer: string; typed: string; correct: boolean }> = []): Buffer {
+  const now = Date.now();
+  return Buffer.from(JSON.stringify({
+    product: 'context-cloze-vocab',
+    version: 1,
+    exportedAt: new Date(now).toISOString(),
+    items: items.map((item, index) => ({
+      ...item,
+      note: '',
+      createdAt: now - index,
+      dueAt: item.dueAt ?? now,
+      intervalDays: 0,
+      ease: 2.3,
+      lapses: 0,
+      reviewCount: 0
+    })),
+    reviews: reviews.map((review, index) => ({ ...review, reviewedAt: now - index }))
+  }));
+}
+
 test('@claim:demo-sample-count demo opens eight sample words', async ({ page, browser }) => {
   await page.goto('/');
   const sampleLink = page.getByRole('link', { name: 'Try it with sample data' });
@@ -55,7 +75,7 @@ test('@claim:demo-sample-count demo opens eight sample words', async ({ page, br
   await expect(page.getByLabel('Demo status')).toContainText('Demo — sample data, nothing is saved to your word list');
   await expect(page.getByRole('button', { name: 'Reset demo' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Start for real' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Type the missing word' })).toBeVisible();
+  await expect(page.locator('.review-sheet').getByRole('heading', { name: 'Type the missing word' })).toBeVisible();
   await expect(page.getByText('8 words', { exact: true })).toBeVisible();
 
   const directContext = await browser.newContext({ baseURL: 'http://127.0.0.1:4173' });
@@ -190,7 +210,7 @@ test('@claim:due-queue due words return as questions', async ({ page }) => {
   await page.getByLabel('Sentence containing that word').fill('The instructions are clear to everyone.');
   await page.getByRole('button', { name: 'Save word' }).click();
   await page.getByRole('button', { name: 'Practise due words' }).click();
-  await expect(page.getByRole('heading', { name: 'Type the missing word' })).toBeVisible();
+  await expect(page.locator('.review-sheet').getByRole('heading', { name: 'Type the missing word' })).toBeVisible();
   await expect(page.locator('.review-sheet blockquote')).toContainText('_____');
 });
 
@@ -206,6 +226,40 @@ test('@claim:backup-roundtrip round-trips every word schedule and answer history
   const restored = await readExport(page) as { items: unknown[]; reviews: unknown[] };
   expect(restored.items).toEqual(data.items);
   expect(restored.reviews).toEqual(data.reviews);
+});
+
+test('@claim:tab-bulk-entry saves a tab-separated word and sentence', async ({ page }) => {
+  await page.goto('/?demo=1');
+  await page.getByText('Paste several words').click();
+  await page.getByLabel('One per line: word | sentence').fill('tenacious\tA tenacious learner keeps practising.');
+  await page.getByRole('button', { name: 'Save pasted words' }).click();
+  await expect(page.getByRole('status')).toHaveText('Saved 1 word.');
+  await expect(page.getByText('9 words', { exact: true })).toBeVisible();
+  await expect(page.locator('.word-list').getByText('tenacious', { exact: true })).toBeVisible();
+  expect(await readStoredWords(page, 'context-cloze-demo')).toContain('tenacious');
+});
+
+test('@claim:due-session-only a short session excludes future words', async ({ page }) => {
+  const now = Date.now();
+  await page.goto('/');
+  await page.locator('#import-file').setInputFiles({
+    name: 'due-session-fixture.json',
+    mimeType: 'application/json',
+    buffer: backupFixture([
+      { id: 'due-now', word: 'urgent', sentence: 'The urgent message needs an answer.', dueAt: now - 1_000 },
+      { id: 'future-word', word: 'later', sentence: 'The later train leaves tomorrow.', dueAt: now + 86_400_000 }
+    ])
+  });
+  await expect(page.getByRole('status')).toHaveText('Imported 2 words.');
+  await expect(page.getByText('1 due now', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Practise due words' }).click();
+  await expect(page.getByText('Sentence 1 of 1', { exact: true })).toBeVisible();
+  await expect(page.locator('.review-sheet blockquote')).toContainText('The _____ message needs an answer.');
+  await expect(page.locator('.review-sheet blockquote')).not.toContainText('later');
+  await page.getByLabel('Your answer').fill('urgent');
+  await page.getByRole('button', { name: 'Check answer' }).click();
+  await page.getByRole('button', { name: 'Finish session' }).click();
+  await expect(page.getByText('You answered 1 sentence.')).toBeVisible();
 });
 
 test('@regression:malformed-json-import gives an actionable error', async ({ page }) => {
@@ -268,9 +322,14 @@ test('@claim:free-limit landing states and enforces the 50-word free tier', asyn
   await expect(page.getByText('Only 50 free word spaces remain. Paste fewer lines or add a license.')).toBeVisible();
 });
 
-test('@claim:checkout-link shows a visible Sociobot checkout destination', async ({ page }) => {
+test('@claim:checkout-link opens the visible Sociobot checkout destination', async ({ page, request }) => {
   await page.goto('/');
-  await expect(page.getByRole('link', { name: /Buy for \$12 once — opens secure checkout/ })).toHaveAttribute('href', 'https://api.sociobot.in/api/v1/products/context-cloze-vocab/checkout');
+  const checkoutLink = page.getByRole('link', { name: /Buy for \$12 once — opens secure checkout/ });
+  const checkoutUrl = 'https://api.sociobot.in/api/v1/products/context-cloze-vocab/checkout';
+  await expect(checkoutLink).toHaveAttribute('href', checkoutUrl);
+  const response = await request.get(checkoutUrl, { maxRedirects: 0, failOnStatusCode: false });
+  expect(response.status()).toBe(303);
+  expect(response.headers()['location']).toMatch(/^https:\/\/checkout\.dodopayments\.com\/session\//u);
 });
 
 test('@claim:license-token-privacy stores a returned token and sends it only to Sociobot', async ({ page }) => {
@@ -329,4 +388,32 @@ test('@claim:paid-license a returned license stores beyond 50 words and shows ev
   const pairs = page.locator('.confusions li');
   await expect(pairs).toHaveCount(4);
   for (let index = 0; index < 4; index += 1) await expect(pairs.nth(index)).toContainText(`guess${index}`);
+});
+
+test('@claim:free-confusion-limit shows exactly three pairs without a license', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByText('Personal license active')).toHaveCount(0);
+  const words = ['amber', 'birch', 'cinder', 'dawn'].map((word, index) => ({
+    id: `free-pair-word-${index}`,
+    word,
+    sentence: `The ${word} marker belongs in this fixture.`
+  }));
+  const reviews = words.map((item, index) => ({
+    id: `free-pair-review-${index}`,
+    itemId: item.id,
+    answer: item.word,
+    typed: `guess${index}`,
+    correct: false
+  }));
+  await page.locator('#import-file').setInputFiles({
+    name: 'free-pairs-fixture.json',
+    mimeType: 'application/json',
+    buffer: backupFixture(words, reviews)
+  });
+  await expect(page.getByRole('status')).toHaveText('Imported 4 words.');
+  const pairs = page.locator('.confusions ol li');
+  await expect(pairs).toHaveCount(3);
+  for (let index = 0; index < 3; index += 1) await expect(pairs.nth(index)).toContainText(`guess${index}`);
+  await expect(page.getByText('The free view shows three pairs.')).toBeVisible();
+  await expect(page.getByText('The one-time license shows the full list.')).toBeVisible();
 });

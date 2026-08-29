@@ -95,7 +95,28 @@
     "claim": "The purchase link opens Sociobot's secure checkout.",
     "where": "paid section",
     "test": "npm test -- --grep @claim:checkout-link",
-    "sandbox": "fresh landing page; assert the visible purchase link targets the product's Sociobot checkout endpoint"
+    "sandbox": "fresh landing page; assert the visible purchase link targets the product's Sociobot checkout endpoint, then request that exact endpoint and assert its HTTPS redirect reaches a Dodo checkout session"
+  },
+  {
+    "id": "tab-bulk-entry",
+    "claim": "You can paste a tab between a word and its sentence when adding several words.",
+    "where": "bulk entry help",
+    "test": "npm test -- --grep @claim:tab-bulk-entry",
+    "sandbox": "fresh demo; paste one tab-separated word and sentence through bulk entry, save it, and assert the new word appears in the demo list"
+  },
+  {
+    "id": "due-session-only",
+    "claim": "A short session uses only words due today.",
+    "where": "practice desk",
+    "test": "npm test -- --grep @claim:due-session-only",
+    "sandbox": "fresh real store; restore a two-word fixture with one due now and one due tomorrow, start a due session, and assert it contains exactly the due question"
+  },
+  {
+    "id": "free-confusion-limit",
+    "claim": "The free view shows three confusion pairs.",
+    "where": "confusion pairs panel",
+    "test": "npm test -- --grep @claim:free-confusion-limit",
+    "sandbox": "fresh unlicensed real store; restore four distinct wrong-answer pairs and assert exactly three pairs plus the free-limit explanation are visible"
   },
   {
     "id": "license-token-privacy",

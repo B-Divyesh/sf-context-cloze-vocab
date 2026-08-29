@@ -121,7 +121,7 @@ function homePage(): string {
       <h2>How sentence practice works</h2>
       <ol class="steps">
         <li><span>01</span><div><h3>Add words in context</h3><p>Paste a word and a sentence you trust. Each saved word becomes a blank.</p></div></li>
-        <li><span>02</span><div><h3>Type what belongs</h3><p>Due words return as questions. Capitalisation does not affect marking.</p></div></li>
+        <li><span>02</span><div><h3>Type the missing word</h3><p>Due words return as questions. Capitalisation does not affect marking.</p></div></li>
         <li><span>03</span><div><h3>Review words you confuse</h3><p>Wrong guesses become confusion pairs. Review the words you confused.</p></div></li>
       </ol>
     </section>
@@ -229,7 +229,7 @@ function offlinePage(): string {
 }
 
 function notFoundPage(): string {
-  return `<main id="main" class="state-page" tabindex="-1"><div class="horizon-mark" aria-hidden="true">_____?</div><p class="eyebrow">404 · Missing page</p><h1 tabindex="-1">This sentence has no ending</h1><p>The address does not match a page in Context Cloze.</p><a class="button primary spa-link" href="/">Return to your words</a></main>`;
+  return `<main id="main" class="state-page" tabindex="-1"><div class="horizon-mark" aria-hidden="true">_____?</div><p class="eyebrow">404 · Missing page</p><h1 tabindex="-1">Page not found</h1><p>The address does not match a page in Context Cloze.</p><a class="button primary spa-link" href="/">Return to your words</a></main>`;
 }
 
 function dueLabel(dueAt: number): string {

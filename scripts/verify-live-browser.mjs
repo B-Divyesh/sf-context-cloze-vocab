@@ -66,6 +66,7 @@ try {
   assert(firstHomeCopy.includes('Add a word and a sentence. Context Cloze hides the word.'));
   assert(firstHomeCopy.toLowerCase().includes('practice steps'));
   assert(firstHomeCopy.toLowerCase().includes('your content and storage'));
+  assert.equal(await page.locator('#how h3').nth(1).innerText(), 'Type the missing word');
   result.destinations.checkout = await page.getByRole('link', { name: /Buy for \$12 once/u }).getAttribute('href');
   result.destinations.factory = await page.getByRole('link', { name: /Built by Param Factory/u }).getAttribute('href');
   assert.equal(result.destinations.checkout, 'https://api.sociobot.in/api/v1/products/context-cloze-vocab/checkout');
@@ -78,7 +79,7 @@ try {
   });
   assert.equal(result.restoreBackupFocus.style, 'solid');
   assert(Number.parseFloat(result.restoreBackupFocus.width) >= 3);
-  await screenshot(page, 'polish-3-live-home-390.png');
+  await screenshot(page, 'polish-4-live-home-390.png');
   await page.getByLabel('Word', { exact: true }).fill('keepsake');
   await page.getByLabel('Sentence containing that word').fill('This keepsake stays in the real word list.');
   await page.getByRole('button', { name: 'Save word' }).click();
@@ -116,7 +117,7 @@ try {
     const box = await target.boundingBox();
     assert(box && box.width >= 44 && box.height >= 44);
   }
-  await screenshot(page, 'polish-3-live-demo-390.png');
+  await screenshot(page, 'polish-4-live-demo-390.png');
   const demoCopy = await page.locator('body').innerText();
   assert(!demoCopy.includes('keepsake'));
   assert(!demoCopy.includes('Close calls'));
@@ -157,6 +158,7 @@ try {
     assert.equal(response.status(), expectedStatus);
     assert.equal(await page.title(), title);
     assert.equal(await page.locator('h1').count(), 1);
+    if (path.includes('missing')) assert.equal(await page.locator('h1').innerText(), 'Page not found');
     assert.equal(await page.locator('main').count(), 1);
     assert.equal(await page.locator('link[rel="canonical"]').count(), 1);
     assert.equal(await page.locator('meta[property="og:title"]').getAttribute('content'), title);
@@ -165,9 +167,9 @@ try {
     assert.equal(serious.length, 0);
     result.routes[path] = expectedStatus;
     result.axeSeriousOrCritical[path] = serious.length;
-    if (path === '/privacy') await screenshot(page, 'polish-3-live-privacy.png', true);
-    if (path === '/terms') await screenshot(page, 'polish-3-live-terms.png', true);
-    if (path.includes('missing')) await screenshot(page, 'polish-3-live-404.png', true);
+    if (path === '/privacy') await screenshot(page, 'polish-4-live-privacy.png', true);
+    if (path === '/terms') await screenshot(page, 'polish-4-live-terms.png', true);
+    if (path.includes('missing')) await screenshot(page, 'polish-4-live-404.png', true);
     testingExpected404 = false;
   }
 

@@ -1,6 +1,6 @@
 # Landing copy audit
 
-Audited 2026-08-29 after polish round 3. Counts treat prices, email addresses,
+Audited 2026-08-29 after polish round 4. Counts treat prices, email addresses,
 URLs, and hyphenated terms as one word. No public sentence
 exceeds 22 words or contains a banned marketing word. Every claim-like line
 below names its matching entry in `.factory/claims.json`.
@@ -36,16 +36,16 @@ three tested facts. The primary sample action remains inside the first 390 ×
 | Add a word and a sentence that uses it. | 9 | Empty-state instruction |
 | You can then start a typed review. | 7 | `typed-cloze` |
 | Saved words will appear here. | 5 | Empty-list state |
-| A tab works instead of the \| mark. | 8 | Bulk-entry help |
+| A tab works instead of the \| mark. | 8 | `tab-bulk-entry` |
 | Backups include your sentences, schedule, and answer history. | 8 | `backup-roundtrip` |
 | Backup files use JSON format. | 5 | File-format note beside plain controls |
 | Type the missing word | 4 | Practice instruction |
-| A short session uses only the words due today. | 9 | Describes the current due queue |
+| A short session uses only the words due today. | 9 | `due-session-only` |
 | You can practise every word or add another sentence. | 9 | Empty due-state next steps |
 | Wrong answers | 2 | Plain confusion-section label |
 | These pairs come from your incorrect answers. | 7 | `confusion-pairs` |
 | Wrong guesses will appear here beside the intended word. | 9 | Empty confusion state |
-| The free view shows three pairs. | 6 | `paid-license` |
+| The free view shows three pairs. | 6 | `free-confusion-limit` |
 | The one-time license shows the full list. | 8 | `paid-license` |
 
 Actions consistently name their result: **Save word**, **Check answer**,
@@ -70,6 +70,7 @@ backup**, **Reset demo**, and **Start for real**.
 | Your word list remains in this browser unless you download a backup. | 12 | `local-storage` |
 | Pay $12 once for unlimited words and the full confusion-pair history. | 11 | `free-limit`, `paid-license` |
 | The free list holds 50 words. | 6 | `free-limit` |
+| Buy for $12 once — opens secure checkout | 7 | `checkout-link` |
 | For license or refund questions, email support@sociobot.in. | 7 | Contact instruction, not a billing claim |
 | Read the license terms. | 4 | Legal-page link |
 | Type the missing word in sentences you chose. | 8 | Plain footer description |
@@ -88,5 +89,5 @@ backup**, **Reset demo**, and **Start for real**.
 | Portable file | backup |
 | Paid entitlement | one-time license |
 
-Catalog description: “Practise your own words by typing each missing word in
-context.” It has 11 words, starts with a verb, and is 63 characters.
+Catalog description: “Practise missing words in your own sentences.” It has 7
+words, starts with a verb, and is 45 characters.
